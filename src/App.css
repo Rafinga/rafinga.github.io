@@ -45,6 +45,23 @@
   margin: 0 auto;
 }
 
+.nav-controls {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.mobile-toggle {
+  display: none;
+  background: none;
+  border: 1px solid var(--border);
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-size: 1.2rem;
+  color: var(--text-primary);
+}
+
 .nav-links {
   display: flex;
   gap: 2rem;
@@ -205,8 +222,25 @@ h3 {
     font-size: 2rem;
   }
   
+  .mobile-toggle {
+    display: block;
+  }
+  
   .nav-links {
     display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--bg-primary);
+    border-top: 1px solid var(--border);
+    flex-direction: column;
+    padding: 1rem;
+    gap: 1rem;
+  }
+  
+  .nav-links.mobile-open {
+    display: flex;
   }
   
   .project-grid, .experimental-grid {
