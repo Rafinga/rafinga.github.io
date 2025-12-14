@@ -21,7 +21,8 @@
   "homepage": "https://github.com/Rafinga/rafinga.github.io#readme",
   "dependencies": {
     "react": "^19.2.3",
-    "react-dom": "^19.2.3"
+    "react-dom": "^19.2.3",
+    "react-router-dom": "^7.10.1"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^5.1.2",
