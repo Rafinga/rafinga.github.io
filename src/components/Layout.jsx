@@ -10,11 +10,23 @@ const Layout = ({ children, darkMode, setDarkMode }) => {
         <nav className="nav">
           <Link to="/" className="logo">Your Name</Link>
           <div className={`nav-links ${mobileMenuOpen ? 'mobile-open' : ''}`}>
+            <button 
+              className="close-menu"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              ✕
+            </button>
             <Link to="/" onClick={() => setMobileMenuOpen(false)}>Home</Link>
             <Link to="/projects" onClick={() => setMobileMenuOpen(false)}>Projects</Link>
             <Link to="/experimental" onClick={() => setMobileMenuOpen(false)}>Experimental</Link>
             <Link to="/contact" onClick={() => setMobileMenuOpen(false)}>Contact</Link>
           </div>
+          {mobileMenuOpen && (
+            <div 
+              className="menu-backdrop"
+              onClick={() => setMobileMenuOpen(false)}
+            />
+          )}
           <div className="nav-controls">
             <button 
               className="mobile-toggle"
