@@ -11,6 +11,7 @@
 
 .light {
   --bg-primary: #ffffff;
+  --bg-primary-rgb: 255, 255, 255;
   --bg-secondary: #f8f9fa;
   --text-primary: #2d3748;
   --text-secondary: #4a5568;
@@ -20,6 +21,7 @@
 
 .dark {
   --bg-primary: #1a202c;
+  --bg-primary-rgb: 26, 32, 44;
   --bg-secondary: #2d3748;
   --text-primary: #f7fafc;
   --text-secondary: #cbd5e0;
@@ -228,19 +230,37 @@ h3 {
   
   .nav-links {
     display: none;
-    position: absolute;
-    top: 100%;
+    position: fixed;
+    top: 0;
     left: 0;
     right: 0;
-    background: var(--bg-primary);
-    border-top: 1px solid var(--border);
+    background: rgba(var(--bg-primary-rgb), 0.95);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border);
     flex-direction: column;
-    padding: 1rem;
-    gap: 1rem;
+    padding: 5rem 2rem 2rem;
+    gap: 2rem;
+    z-index: 1000;
   }
   
   .nav-links.mobile-open {
     display: flex;
+  }
+  
+  .nav-links a {
+    font-size: 1.2rem;
+    text-align: center;
+    padding: 1rem 2rem;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 0.5rem;
+    transition: all 0.3s ease;
+  }
+  
+  .nav-links a:hover {
+    background: var(--accent);
+    color: var(--bg-primary);
+    transform: translateY(-2px);
   }
   
   .project-grid, .experimental-grid {
