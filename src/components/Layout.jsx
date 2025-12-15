@@ -20,6 +20,7 @@ const Layout = ({ children, darkMode, setDarkMode }) => {
             <Link to="/experience" onClick={() => setMobileMenuOpen(false)}>Experience</Link>
             <Link to="/projects" onClick={() => setMobileMenuOpen(false)}>Projects</Link>
             <Link to="/skills" onClick={() => setMobileMenuOpen(false)}>Skills</Link>
+            <Link to="/compiler" onClick={() => setMobileMenuOpen(false)}>Compiler</Link>
             <Link to="/experimental" onClick={() => setMobileMenuOpen(false)}>Experimental</Link>
             <Link to="/contact" onClick={() => setMobileMenuOpen(false)}>Contact</Link>
           </div>

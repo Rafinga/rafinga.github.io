@@ -5,6 +5,7 @@ import Home from './pages/Home'
 import Experience from './pages/Experience'
 import Projects from './pages/Projects'
 import Skills from './pages/Skills'
+import Compiler from './pages/Compiler'
 import Experimental from './pages/Experimental'
 import Contact from './pages/Contact'
 import './App.css'
@@ -33,6 +34,11 @@ function App() {
         <Route path="/skills" element={
           <Layout darkMode={darkMode} setDarkMode={setDarkMode}>
             <Skills />
+          </Layout>
+        } />
+        <Route path="/compiler" element={
+          <Layout darkMode={darkMode} setDarkMode={setDarkMode}>
+            <Compiler />
           </Layout>
         } />
         <Route path="/experimental" element={

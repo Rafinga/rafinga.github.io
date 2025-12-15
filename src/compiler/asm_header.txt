@@ -1,0 +1,21 @@
+.section .data
+fmt:    .asciz "Function returned: %d\n"
+
+.section .text
+.global main
+.extern printf
+
+main:
+    push %rbp
+    movq %rsp, %rbp
+
+    call my_function   # Call your function
+    movq %rax, %rsi    # Move return value into second argument for printf
+
+    leaq fmt(%rip), %rdi  # Use RIP-relative addressing for fmt
+    movq $0, %rax         # Clear AL register (for varargs compatibility)
+    call printf           # Call printf
+
+    movq $0, %rax      # Return 0
+    pop %rbp
+    ret

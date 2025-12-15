@@ -16,13 +16,6 @@ const Contact = () => (
         <br />
         Cambridge, MA 02139
       </div>
-      <div className="contact-item">
-        <strong>Home Address:</strong>
-        <br />
-        395 Sec Melendez
-        <br />
-        Cidra, PR 00739
-      </div>
     </div>
     <div className="contact-links">
       <a href="mailto:ragoo@alum.mit.edu">Email</a>
