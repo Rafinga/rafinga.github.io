@@ -7,7 +7,7 @@ import printf;
 void main() {
     int x;
     x = 5;        // Error: using 'x' before declaration\
-    printf("%d\n",x);
+    printf("%d\\n",x);
 }
 `);
   const [outputAssembly, setOutputAssembly] = useState("");
