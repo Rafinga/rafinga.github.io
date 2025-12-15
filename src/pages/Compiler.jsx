@@ -1,45 +1,50 @@
-import { useState } from 'react'
-import WebCompiler from '../compiler/webCompiler.js'
+import { useState } from "react";
+import WebCompiler from "../compiler/webCompiler.js";
 
 const Compiler = () => {
   const [inputCode, setInputCode] = useState(`// Example Decaf program
-int main() {
-    int x = 5;
-    int y = 10;
-    return x + y;
-}`)
-  const [outputAssembly, setOutputAssembly] = useState('')
-  const [isCompiling, setIsCompiling] = useState(false)
-  const [error, setError] = useState('')
+import printf;
+void main() {
+    int x;
+    x = 5;        // Error: using 'x' before declaration\
+    printf("%d\n",x);
+}
+`);
+  const [outputAssembly, setOutputAssembly] = useState("");
+  const [isCompiling, setIsCompiling] = useState(false);
+  const [error, setError] = useState("");
 
-  const compiler = new WebCompiler()
+  const compiler = new WebCompiler();
 
   const compileCode = async () => {
-    setIsCompiling(true)
-    setError('')
-    setOutputAssembly('')
-    
+    setIsCompiling(true);
+    setError("");
+    setOutputAssembly("");
+
     try {
       // Use the web compiler
-      const result = compiler.compile(inputCode)
-      
+      const result = compiler.compile(inputCode);
+
       if (result.success) {
-        setOutputAssembly(result.assembly)
+        setOutputAssembly(result.assembly);
       } else {
-        setError(result.errors.join('\n'))
+        setError(result.errors.join("\n"));
       }
     } catch (err) {
-      setError(err.message || 'Compilation failed')
+      setError(err.message || "Compilation failed");
     } finally {
-      setIsCompiling(false)
+      setIsCompiling(false);
     }
-  }
+  };
 
   return (
     <section className="compiler">
       <h3>Decaf Compiler</h3>
-      <p>Interactive C-like language compiler built during MIT coursework. Enter your Decaf code below:</p>
-      
+      <p>
+        Interactive C-like language compiler built during MIT coursework. Enter
+        your Decaf code below:
+      </p>
+
       <div className="compiler-interface">
         <div className="input-section">
           <h4>Input Code</h4>
@@ -50,12 +55,12 @@ int main() {
             placeholder="Enter your Decaf code here..."
             rows={15}
           />
-          <button 
+          <button
             className="compile-button"
             onClick={compileCode}
             disabled={isCompiling}
           >
-            {isCompiling ? 'Compiling...' : 'Compile to Assembly'}
+            {isCompiling ? "Compiling..." : "Compile to Assembly"}
           </button>
         </div>
 
@@ -74,17 +79,26 @@ int main() {
 
       <div className="compiler-info">
         <h4>About This Compiler</h4>
-        <p>This is a simplified web version of my multi-phase Decaf compiler, featuring:</p>
+        <p>
+          This is a simplified web version of my multi-phase Decaf compiler,
+          featuring:
+        </p>
         <ul>
           <li>Lexical analysis and basic parsing</li>
           <li>Semantic analysis (simplified for web)</li>
           <li>x86-64 assembly code generation</li>
           <li>Error reporting and validation</li>
         </ul>
-        <p><em>Note: This is a simplified version for web demonstration. The full compiler includes advanced optimizations, control flow analysis, and complete language support.</em></p>
+        <p>
+          <em>
+            Note: This is a simplified version for web demonstration. The full
+            compiler includes advanced optimizations, control flow analysis, and
+            complete language support.
+          </em>
+        </p>
       </div>
     </section>
-  )
-}
+  );
+};
 
-export default Compiler
+export default Compiler;
