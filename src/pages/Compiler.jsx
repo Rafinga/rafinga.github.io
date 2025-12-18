@@ -1,20 +1,46 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import WebCompiler from "../compiler/webCompiler.js";
+import X86Interpreter from "../interpreter/x86Interpreter.ts";
+import "../styles/compiler.css";
 
 const Compiler = () => {
   const [inputCode, setInputCode] = useState(`// Example Decaf program
+// Example Decaf program
 import printf;
 void main() {
-    int x;
-    x = 5;        // Error: using 'x' before declaration\
-    printf("%d\\n",x);
+    int x[3];
+    x[0] = 5;        // Error: using 'x' before declaration  
+    printf("%d\\n",x[0]);
 }
 `);
   const [outputAssembly, setOutputAssembly] = useState("");
   const [isCompiling, setIsCompiling] = useState(false);
   const [error, setError] = useState("");
+  const [isRunning, setIsRunning] = useState(false);
+  const [executionOutput, setExecutionOutput] = useState("");
+
+  const interpreterRef = useRef(new X86Interpreter());
 
   const compiler = new WebCompiler();
+
+  const executeCode = async () => {
+    if (!outputAssembly) {
+      setError("Please compile code first");
+      return;
+    }
+
+    setIsRunning(true);
+    setExecutionOutput("");
+
+    try {
+      const result = interpreterRef.current.execute(outputAssembly);
+      setExecutionOutput(result);
+    } catch (err) {
+      setError("Execution failed: " + err.message);
+    } finally {
+      setIsRunning(false);
+    }
+  };
 
   const compileCode = async () => {
     setIsCompiling(true);
@@ -24,7 +50,6 @@ void main() {
     try {
       // Use the web compiler
       const result = compiler.compile(inputCode);
-
       if (result.success) {
         setOutputAssembly(result.assembly);
       } else {
@@ -62,6 +87,13 @@ void main() {
           >
             {isCompiling ? "Compiling..." : "Compile to Assembly"}
           </button>
+          <button
+            className="execute-button"
+            onClick={executeCode}
+            disabled={isRunning || !outputAssembly}
+          >
+            {isRunning ? "Running..." : "Execute x86 Code"}
+          </button>
         </div>
 
         <div className="output-section">
@@ -73,6 +105,17 @@ void main() {
             readOnly
             placeholder="Assembly output will appear here..."
             rows={15}
+          />
+        </div>
+
+        <div className="execution-section">
+          <h4>Execution Output</h4>
+          <textarea
+            className="execution-output"
+            value={executionOutput}
+            readOnly
+            placeholder="Program output will appear here..."
+            rows={8}
           />
         </div>
       </div>

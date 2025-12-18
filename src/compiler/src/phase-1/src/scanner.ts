@@ -1,5 +1,3 @@
-import * as fs from "fs";
-
 enum TokenType {
   STRINGLITERAL = "STRINGLITERAL",
   CHARLITERAL = "CHARLITERAL",
@@ -47,16 +45,16 @@ const TOKEN_PATTERNS = [
   { type: "SINGLEOP", regex: /^[;,+\*%/<>=\-!]/ },
 ];
 
-export function scanFile(filePath: string): {
-  output: string;
-  hasError: boolean;
-} {
-  if (!fs.existsSync(filePath)) {
-    throw new Error(`Error: File not found: ${filePath}`);
-  }
-  const sourceCode = fs.readFileSync(filePath, "utf-8");
-  return tokenize(sourceCode, filePath);
-}
+// export function scanFile(filePath: string): {
+//   output: string;
+//   hasError: boolean;
+// } {
+//   if (!fs.existsSync(filePath)) {
+//     throw new Error(`Error: File not found: ${filePath}`);
+//   }
+//   const sourceCode = fs.readFileSync(filePath, "utf-8");
+//   return tokenize(sourceCode, filePath);
+// }
 
 export function tokenize(
   source: string,

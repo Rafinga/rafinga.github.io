@@ -1,0 +1,27 @@
+.execute-button {
+  margin-left: 10px;
+  background-color: #28a745;
+}
+
+.execute-button:disabled {
+  background-color: #6c757d;
+}
+
+.execution-section {
+  margin-top: 20px;
+}
+
+.emulator-screen {
+  width: 100%;
+  height: 300px;
+  border: 1px solid #ccc;
+  background-color: #000;
+  margin-bottom: 10px;
+}
+
+.execution-output {
+  width: 100%;
+  font-family: monospace;
+  background-color: #f8f9fa;
+  border: 1px solid #ccc;
+}

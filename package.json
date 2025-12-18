@@ -23,7 +23,8 @@
     "antlr4": "^4.13.2",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
-    "react-router-dom": "^7.10.1"
+    "react-router-dom": "^7.10.1",
+    "v86": "^0.5.292"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^5.1.2",
