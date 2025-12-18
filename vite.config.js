@@ -6,6 +6,7 @@ export default defineConfig({
   base: process.env.NODE_ENV === "production" ? "/" : "/",
   build: {
     outDir: "dist",
+    minify: false,
   },
   server: {
     host: "0.0.0.0",
