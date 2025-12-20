@@ -9,6 +9,7 @@ import { Optimizer } from "./phase-4/optimizer";
 import { WebBuilder } from "./phase-4/WebAllocator";
 import { getCallKilledReges, LongReg } from "./phase-3/RegTypes";
 import { removeRedundantMoves } from "./phase-4/utils";
+import { visualizeMethod, resetVisualization } from "./phase-3/visualizer";
 
 /**
  * Entry point for the Decaf compiler
@@ -63,12 +64,27 @@ function removeAsmComments(code: string): string {
     .join("\n");
 }
 
-export function compileWeb(inputCode: string, enabledOptimizations: string[] = ["cp", "cse", "dce", "algebra", "fold", "regalloc", "inline"]): {
+export function compileWeb(
+  inputCode: string,
+  enabledOptimizations: string[] = [
+    "cp",
+    "cse",
+    "dce",
+    "algebra",
+    "fold",
+    "regalloc",
+    "inline",
+  ],
+  canvas?: HTMLCanvasElement
+): {
   success: boolean;
   assembly?: string;
   errors: string[];
 } {
   try {
+    // Reset visualization on new compilation
+    resetVisualization();
+    
     const program = irGen(inputCode);
     const cfgBuilder = new ControlFlowGraph(program);
     const optimizer = new Optimizer(cfgBuilder, [...program.methods.values()]);
@@ -112,6 +128,9 @@ export function compileWeb(inputCode: string, enabledOptimizations: string[] = [
         const webBuilder = new WebBuilder(block, cfgBuilder, methodRegesKilled);
         webBuilder.buildInterferenceNodes();
         asmHelper.setWebMap(webBuilder.webMap);
+      }
+      if (canvas) {
+        visualizeMethod(method, block, canvas);
       }
       programContent += asmHelper.buildMethodAsm(method, block);
     });
