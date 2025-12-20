@@ -18,6 +18,19 @@ void main() {
   const [error, setError] = useState("");
   const [isRunning, setIsRunning] = useState(false);
   const [executionOutput, setExecutionOutput] = useState("");
+  const [optimizations, setOptimizations] = useState([
+    "cp", "cse", "dce", "algebra", "fold", "regalloc", "inline"
+  ]);
+
+  const optimizationOptions = [
+    { key: "cp", label: "Constant Propagation" },
+    { key: "cse", label: "Common Subexpression Elimination" },
+    { key: "dce", label: "Dead Code Elimination" },
+    { key: "algebra", label: "Algebraic Simplification" },
+    { key: "fold", label: "Constant Folding" },
+    { key: "regalloc", label: "Register Allocation" },
+    { key: "inline", label: "Function Inlining" }
+  ];
 
   const interpreterRef = useRef(new X86Interpreter());
 
@@ -48,8 +61,8 @@ void main() {
     setOutputAssembly("");
 
     try {
-      // Use the web compiler
-      const result = compiler.compile(inputCode);
+      // Use the web compiler with selected optimizations
+      const result = compiler.compile(inputCode, optimizations);
       if (result.success) {
         setOutputAssembly(result.assembly);
       } else {
@@ -71,6 +84,28 @@ void main() {
       </p>
 
       <div className="compiler-interface">
+        <div className="optimization-controls">
+          <h4>Optimization Settings</h4>
+          <div className="optimization-checkboxes">
+            {optimizationOptions.map(opt => (
+              <label key={opt.key} className="optimization-option">
+                <input
+                  type="checkbox"
+                  checked={optimizations.includes(opt.key)}
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      setOptimizations([...optimizations, opt.key]);
+                    } else {
+                      setOptimizations(optimizations.filter(o => o !== opt.key));
+                    }
+                  }}
+                />
+                {opt.label}
+              </label>
+            ))}
+          </div>
+        </div>
+
         <div className="input-section">
           <h4>Input Code</h4>
           <textarea

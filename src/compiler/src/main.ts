@@ -63,7 +63,7 @@ function removeAsmComments(code: string): string {
     .join("\n");
 }
 
-export function compileWeb(inputCode: string): {
+export function compileWeb(inputCode: string, enabledOptimizations: string[] = ["cp", "cse", "dce", "algebra", "fold", "regalloc", "inline"]): {
   success: boolean;
   assembly?: string;
   errors: string[];
@@ -73,16 +73,7 @@ export function compileWeb(inputCode: string): {
     const cfgBuilder = new ControlFlowGraph(program);
     const optimizer = new Optimizer(cfgBuilder, [...program.methods.values()]);
 
-    const allOptimizations = [
-      "cp",
-      "cse",
-      "dce",
-      "algebra",
-      "fold",
-      "regalloc",
-      "inline",
-    ];
-    const enabledOpts = new Set(allOptimizations);
+    const enabledOpts = new Set(enabledOptimizations);
 
     let cfg;
     if (enabledOpts.size === 0) {
