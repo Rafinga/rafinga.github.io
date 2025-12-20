@@ -36544,21 +36544,12 @@ function irGen(webProgram) {
 function removeAsmComments(code) {
   return code.split("\n").filter((line) => !line.startsWith(";") && !line.startsWith("#")).join("\n");
 }
-function compileWeb(inputCode) {
+function compileWeb(inputCode, enabledOptimizations = ["cp", "cse", "dce", "algebra", "fold", "regalloc", "inline"]) {
   try {
     const program = irGen(inputCode);
     const cfgBuilder = new ControlFlowGraph(program);
     const optimizer = new Optimizer(cfgBuilder, [...program.methods.values()]);
-    const allOptimizations = [
-      "cp",
-      "cse",
-      "dce",
-      "algebra",
-      "fold",
-      "regalloc",
-      "inline"
-    ];
-    const enabledOpts = new Set(allOptimizations);
+    const enabledOpts = new Set(enabledOptimizations);
     let cfg;
     if (enabledOpts.size === 0) {
       cfg = cfgBuilder.buildCFG();
@@ -36603,9 +36594,9 @@ function compileWeb(inputCode) {
   }
 }
 class WebCompiler {
-  compile(code) {
+  compile(code, optimizations = ["cp", "cse", "dce", "algebra", "fold", "regalloc", "inline"]) {
     try {
-      return compileWeb(code);
+      return compileWeb(code, optimizations);
     } catch (error) {
       console.error("Compilation error:", error);
       return {
@@ -36783,6 +36774,24 @@ void main() {
   const [error, setError] = reactExports.useState("");
   const [isRunning, setIsRunning] = reactExports.useState(false);
   const [executionOutput, setExecutionOutput] = reactExports.useState("");
+  const [optimizations, setOptimizations] = reactExports.useState([
+    "cp",
+    "cse",
+    "dce",
+    "algebra",
+    "fold",
+    "regalloc",
+    "inline"
+  ]);
+  const optimizationOptions = [
+    { key: "cp", label: "Constant Propagation" },
+    { key: "cse", label: "Common Subexpression Elimination" },
+    { key: "dce", label: "Dead Code Elimination" },
+    { key: "algebra", label: "Algebraic Simplification" },
+    { key: "fold", label: "Constant Folding" },
+    { key: "regalloc", label: "Register Allocation" },
+    { key: "inline", label: "Function Inlining" }
+  ];
   const interpreterRef = reactExports.useRef(new X86Interpreter());
   const compiler = new WebCompiler();
   const executeCode = async () => {
@@ -36806,7 +36815,7 @@ void main() {
     setError("");
     setOutputAssembly("");
     try {
-      const result = compiler.compile(inputCode);
+      const result = compiler.compile(inputCode, optimizations);
       if (result.success) {
         setOutputAssembly(result.assembly);
       } else {
@@ -36822,6 +36831,26 @@ void main() {
     /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { children: "Decaf Compiler" }),
     /* @__PURE__ */ jsxRuntimeExports.jsx("p", { children: "Interactive C-like language compiler built during MIT coursework. Enter your Decaf code below:" }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "compiler-interface", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "optimization-controls", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: "Optimization Settings" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "optimization-checkboxes", children: optimizationOptions.map((opt) => /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { className: "optimization-option", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "input",
+            {
+              type: "checkbox",
+              checked: optimizations.includes(opt.key),
+              onChange: (e2) => {
+                if (e2.target.checked) {
+                  setOptimizations([...optimizations, opt.key]);
+                } else {
+                  setOptimizations(optimizations.filter((o2) => o2 !== opt.key));
+                }
+              }
+            }
+          ),
+          opt.label
+        ] }, opt.key)) })
+      ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "input-section", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: "Input Code" }),
         /* @__PURE__ */ jsxRuntimeExports.jsx(
