@@ -74912,7 +74912,18 @@ function compileWeb(inputCode, enabledOptimizations = [
   }
 }
 class WebCompiler {
-  compile(code, optimizations = ["cp", "cse", "dce", "algebra", "fold", "regalloc", "inline"], canvas) {
+  constructor() {
+    this.debounceTimer = null;
+  }
+  compile(code, optimizations = [
+    "cp",
+    "cse",
+    "dce",
+    "algebra",
+    "fold",
+    "regalloc",
+    "inline"
+  ], canvas) {
     try {
       return compileWeb(code, optimizations, canvas);
     } catch (error3) {
@@ -74923,6 +74934,19 @@ class WebCompiler {
         errors: [error3.message]
       };
     }
+  }
+  checkErrors(code, onResult) {
+    if (this.debounceTimer) {
+      clearTimeout(this.debounceTimer);
+    }
+    this.debounceTimer = setTimeout(() => {
+      try {
+        irGen(code);
+        onResult([]);
+      } catch (error3) {
+        onResult([error3.message]);
+      }
+    }, 500);
   }
 }
 class X86Interpreter {
@@ -75077,6 +75101,43 @@ class X86Interpreter {
     return this.output || "Program executed (no output generated)";
   }
 }
+const CodeEditor = ({ value, onChange, syntaxErrors }) => {
+  const lines = value.split("\n");
+  const errorsByLine = /* @__PURE__ */ new Map();
+  syntaxErrors.forEach((error3) => {
+    const match2 = error3.match(/(?:line (\d+)(?::\d+)?:|Parsing error at line (\d+)|Semantic error at line (\d+))/i);
+    if (match2) {
+      const lineNum = parseInt(match2[1] || match2[2] || match2[3]);
+      errorsByLine.set(lineNum, error3);
+    }
+  });
+  return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "code-editor", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "code-editor-container", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "line-numbers", children: lines.map((_2, index) => {
+      const lineNum = index + 1;
+      const hasError = errorsByLine.has(lineNum);
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "div",
+        {
+          className: `line-number ${hasError ? "error-line-number" : ""}`,
+          title: hasError ? errorsByLine.get(lineNum) : "",
+          children: lineNum
+        },
+        index
+      );
+    }) }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(
+      "textarea",
+      {
+        className: "code-input",
+        value,
+        onChange,
+        placeholder: "Enter your Decaf code here...",
+        rows: 15,
+        spellCheck: false
+      }
+    )
+  ] }) });
+};
 const Compiler = () => {
   const [inputCode, setInputCode] = reactExports.useState(`// Example Decaf program
 // Example Decaf program
@@ -75163,13 +75224,11 @@ void main() {
         printf("Dead result: %ld\\n", result);
     }
 }
-
-
-
 `);
   const [outputAssembly, setOutputAssembly] = reactExports.useState("");
   const [isCompiling, setIsCompiling] = reactExports.useState(false);
   const [error3, setError] = reactExports.useState("");
+  const [syntaxErrors, setSyntaxErrors] = reactExports.useState([]);
   const [isRunning, setIsRunning] = reactExports.useState(false);
   const [executionOutput, setExecutionOutput] = reactExports.useState("");
   const [optimizations, setOptimizations] = reactExports.useState([
@@ -75238,13 +75297,14 @@ void main() {
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "input-section", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: "Input Code" }),
         /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "textarea",
+          CodeEditor,
           {
-            className: "code-input",
             value: inputCode,
-            onChange: (e2) => setInputCode(e2.target.value),
-            placeholder: "Enter your Decaf code here...",
-            rows: 15
+            onChange: (e2) => {
+              setInputCode(e2.target.value);
+              compiler.checkErrors(e2.target.value, setSyntaxErrors);
+            },
+            syntaxErrors
           }
         ),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "compile-controls", children: [
