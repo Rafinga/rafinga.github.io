@@ -3,6 +3,50 @@ import WebCompiler from "../compiler/webCompiler.js";
 import X86Interpreter from "../interpreter/x86Interpreter.ts";
 import "../styles/compiler.css";
 
+const CodeEditor = ({ value, onChange, syntaxErrors }) => {
+  const lines = value.split("\n");
+  const errorsByLine = new Map();
+
+  syntaxErrors.forEach((error) => {
+    // Match multiple error formats
+    const match = error.match(/(?:line (\d+)(?::\d+)?:|Parsing error at line (\d+)|Semantic error at line (\d+))/i);
+    if (match) {
+      const lineNum = parseInt(match[1] || match[2] || match[3]);
+      errorsByLine.set(lineNum, error);
+    }
+  });
+
+  return (
+    <div className="code-editor">
+      <div className="code-editor-container">
+        <div className="line-numbers">
+          {lines.map((_, index) => {
+            const lineNum = index + 1;
+            const hasError = errorsByLine.has(lineNum);
+            return (
+              <div
+                key={index}
+                className={`line-number ${hasError ? "error-line-number" : ""}`}
+                title={hasError ? errorsByLine.get(lineNum) : ""}
+              >
+                {lineNum}
+              </div>
+            );
+          })}
+        </div>
+        <textarea
+          className="code-input"
+          value={value}
+          onChange={onChange}
+          placeholder="Enter your Decaf code here..."
+          rows={15}
+          spellCheck={false}
+        />
+      </div>
+    </div>
+  );
+};
+
 const Compiler = () => {
   const [inputCode, setInputCode] = useState(`// Example Decaf program
 // Example Decaf program
@@ -89,13 +133,11 @@ void main() {
         printf("Dead result: %ld\\n", result);
     }
 }
-
-
-
 `);
   const [outputAssembly, setOutputAssembly] = useState("");
   const [isCompiling, setIsCompiling] = useState(false);
   const [error, setError] = useState("");
+  const [syntaxErrors, setSyntaxErrors] = useState([]);
   const [isRunning, setIsRunning] = useState(false);
   const [executionOutput, setExecutionOutput] = useState("");
   const [optimizations, setOptimizations] = useState([
@@ -179,12 +221,13 @@ void main() {
       <div className="compiler-interface">
         <div className="input-section">
           <h4>Input Code</h4>
-          <textarea
-            className="code-input"
+          <CodeEditor
             value={inputCode}
-            onChange={(e) => setInputCode(e.target.value)}
-            placeholder="Enter your Decaf code here..."
-            rows={15}
+            onChange={(e) => {
+              setInputCode(e.target.value);
+              compiler.checkErrors(e.target.value, setSyntaxErrors);
+            }}
+            syntaxErrors={syntaxErrors}
           />
           <div className="compile-controls">
             <button

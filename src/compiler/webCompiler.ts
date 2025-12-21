@@ -1,7 +1,21 @@
-import { compileWeb } from "./src/main.ts";
+import { compileWeb, irGen } from "./src/main.ts";
 
 class WebCompiler {
-  compile(code: string, optimizations: string[] = ["cp", "cse", "dce", "algebra", "fold", "regalloc", "inline"], canvas?: HTMLCanvasElement) {
+  private debounceTimer: ReturnType<typeof setTimeout> | null = null;
+
+  compile(
+    code: string,
+    optimizations: string[] = [
+      "cp",
+      "cse",
+      "dce",
+      "algebra",
+      "fold",
+      "regalloc",
+      "inline",
+    ],
+    canvas?: HTMLCanvasElement
+  ) {
     try {
       return compileWeb(code, optimizations, canvas);
     } catch (error) {
@@ -12,6 +26,21 @@ class WebCompiler {
         errors: [error.message],
       };
     }
+  }
+
+  checkErrors(code: string, onResult: (errors: string[]) => void) {
+    if (this.debounceTimer) {
+      clearTimeout(this.debounceTimer);
+    }
+
+    this.debounceTimer = setTimeout(() => {
+      try {
+        irGen(code);
+        onResult([]);
+      } catch (error) {
+        onResult([error.message]);
+      }
+    }, 500);
   }
 }
 

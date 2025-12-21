@@ -15,7 +15,7 @@ import { visualizeMethod, resetVisualization } from "./phase-3/visualizer";
  * Entry point for the Decaf compiler
  */
 
-function irGen(webProgram: string): Program {
+export function irGen(webProgram: string): Program {
   // Check Lexical Errors
   const result = tokenize(webProgram, webProgram);
   if (result.hasError) {
@@ -84,7 +84,7 @@ export function compileWeb(
   try {
     // Reset visualization on new compilation
     resetVisualization();
-    
+
     const program = irGen(inputCode);
     const cfgBuilder = new ControlFlowGraph(program);
     const optimizer = new Optimizer(cfgBuilder, [...program.methods.values()]);
