@@ -30030,7 +30030,7 @@ class BasicBlock {
     );
   }
 }
-class Instruction {
+let Instruction$1 = class Instruction {
   constructor(weight8 = 1) {
     this.weight = weight8;
     this.destReg = null;
@@ -30062,8 +30062,8 @@ class Instruction {
   duplicate() {
     throw new Error("duplicate not implemented for Instruction");
   }
-}
-class NegateInstruction extends Instruction {
+};
+class NegateInstruction extends Instruction$1 {
   constructor(src, dest) {
     super();
     this.src = src;
@@ -30118,7 +30118,7 @@ class NegateInstruction extends Instruction {
     return new NegateInstruction(this.src, this.dest);
   }
 }
-class BinOpInstruction extends Instruction {
+class BinOpInstruction extends Instruction$1 {
   constructor(expr1, binOp, expr2, dest) {
     super();
     this.expr1 = expr1;
@@ -30193,7 +30193,7 @@ class BinOpInstruction extends Instruction {
     return new BinOpInstruction(this.expr1, this.binOp, this.expr2, this.dest);
   }
 }
-class CopyInstruction extends Instruction {
+class CopyInstruction extends Instruction$1 {
   constructor(dest, src) {
     super();
     this.dest = dest;
@@ -30254,7 +30254,7 @@ class CopyInstruction extends Instruction {
     return new CopyInstruction(this.dest, this.src);
   }
 }
-class LoadConstantInstruction extends Instruction {
+class LoadConstantInstruction extends Instruction$1 {
   constructor(dest, value, literalType2) {
     super();
     this.dest = dest;
@@ -30304,7 +30304,7 @@ class LoadConstantInstruction extends Instruction {
     return new LoadConstantInstruction(this.dest, this.value, this.literalType);
   }
 }
-class CallInstruction extends Instruction {
+let CallInstruction$1 = class CallInstruction extends Instruction$1 {
   constructor(methodName, args, returnVar) {
     super();
     this.methodName = methodName;
@@ -30375,8 +30375,8 @@ class CallInstruction extends Instruction {
   duplicate() {
     return new CallInstruction(this.methodName, this.args, this.returnVar);
   }
-}
-class JumpBoolInstruction extends Instruction {
+};
+class JumpBoolInstruction extends Instruction$1 {
   constructor(conditionVar, currentLabel, trueLabel, falseLabel) {
     super();
     this.conditionVar = conditionVar;
@@ -30631,7 +30631,7 @@ class MagicDivideInstruction extends BinOpInstruction {
     return new MagicDivideInstruction(this.dest, this.src, this.magicNum, this.shiftNum, this.addNum);
   }
 }
-class CastInstruction extends Instruction {
+class CastInstruction extends Instruction$1 {
   constructor(dest, src, castType) {
     super();
     this.dest = dest;
@@ -30694,7 +30694,7 @@ class CastInstruction extends Instruction {
     return new CastInstruction(this.dest, this.src, this.castType);
   }
 }
-class ReturnInstruction extends Instruction {
+class ReturnInstruction extends Instruction$1 {
   // a return can either return something or nothing
   constructor(src) {
     super();
@@ -30736,7 +30736,7 @@ class ReturnInstruction extends Instruction {
     return new ReturnInstruction(this.src);
   }
 }
-class JumpDirectInstruction extends Instruction {
+class JumpDirectInstruction extends Instruction$1 {
   constructor(label, target) {
     super();
     this.label = label;
@@ -30752,7 +30752,7 @@ class JumpDirectInstruction extends Instruction {
     return new JumpDirectInstruction(this.label, this.target);
   }
 }
-class LabelInstruction extends Instruction {
+class LabelInstruction extends Instruction$1 {
   constructor(label) {
     super();
     this.label = label;
@@ -30766,7 +30766,7 @@ class LabelInstruction extends Instruction {
     return new LabelInstruction(this.label);
   }
 }
-class CreateArrayInstruction extends Instruction {
+class CreateArrayInstruction extends Instruction$1 {
   constructor(name, size3, dataType) {
     super();
     this.name = name;
@@ -30795,7 +30795,7 @@ class CreateArrayInstruction extends Instruction {
     return new CreateArrayInstruction(this.name, this.size, this.dataType);
   }
 }
-class CreateVarInstruction extends Instruction {
+class CreateVarInstruction extends Instruction$1 {
   constructor(name, dataType) {
     super();
     this.name = name;
@@ -31310,7 +31310,7 @@ class ControlFlowGraph {
       const callReturnVar = this.getNextTempVar();
       [curBlock, args] = this.handleMethodCallArgs(expr.args, curBlock, method);
       const dest = callReturnVar;
-      const callInstr = new CallInstruction(
+      const callInstr = new CallInstruction$1(
         expr.methodName,
         args,
         callReturnVar
@@ -31736,7 +31736,7 @@ class ControlFlowGraph {
         curBlock,
         method
       );
-      const callInstr = new CallInstruction(stmt.methodName, argTemps);
+      const callInstr = new CallInstruction$1(stmt.methodName, argTemps);
       callInstr.weight = this.instrWeight;
       sameBlock.instructions.push(callInstr);
       return sameBlock;
@@ -31983,7 +31983,7 @@ class ControlFlowGraph {
         method
       );
       rightExprDest = this.getNextTempVar();
-      const callInstr = new CallInstruction(
+      const callInstr = new CallInstruction$1(
         stmt.rhs.expr.methodName,
         argTemps,
         rightExprDest
@@ -33151,7 +33151,7 @@ ${name}: .skip ${totalReserved * 8}`;
       if (instruction instanceof CopyInstruction) {
         return this.buildCopyInstruction(instruction);
       }
-      if (instruction instanceof CallInstruction) {
+      if (instruction instanceof CallInstruction$1) {
         return this.buildMethodCallInstruction(instruction);
       }
       if (instruction instanceof CastInstruction) {
@@ -33941,7 +33941,7 @@ class DataFlowUtils {
       this.addPotentialUse(uses, instruction.dest);
       return uses;
     }
-    if (instruction instanceof CallInstruction) {
+    if (instruction instanceof CallInstruction$1) {
       instruction.args.filter((arg) => !(arg instanceof StringLiteral)).forEach((arg) => {
         uses.add(getSplitName(arg));
       });
@@ -34277,7 +34277,7 @@ class DceOptimizer {
     const toDelete = /* @__PURE__ */ new Set();
     block.instructions.reverse();
     block.instructions.forEach((instruction, index) => {
-      if (instruction instanceof CallInstruction) {
+      if (instruction instanceof CallInstruction$1) {
         const isDeadMethod = this.isDeadMethod(instruction);
         if (isDeadMethod) {
           toDelete.add(index);
@@ -34296,7 +34296,7 @@ class DceOptimizer {
       if (dest) {
         const splitName = dest.split(/\[|\]/)[0];
         this.isLocal = this.isLocal && !globals.has(splitName);
-        if (this.isRemovable(dest, uses) && !(instruction instanceof CallInstruction)) {
+        if (this.isRemovable(dest, uses) && !(instruction instanceof CallInstruction$1)) {
           toDelete.add(index);
           hasChanged = true;
         }
@@ -34562,7 +34562,7 @@ class CseOptimizer {
           instr.dest
         );
         generated.add(expr);
-      } else if (instr instanceof CallInstruction) {
+      } else if (instr instanceof CallInstruction$1) {
         if (!this.localMethodSet.has(instr.methodName)) {
           breakEquiv = true;
           return;
@@ -34628,7 +34628,7 @@ class CseOptimizer {
     const newInstructions = [];
     for (let i2 = 0; i2 < block.instructions.length; i2++) {
       const instr = block.instructions[i2];
-      if (instr instanceof CallInstruction) {
+      if (instr instanceof CallInstruction$1) {
         if (!this.localMethodSet.has(instr.methodName)) {
           availableExprs = /* @__PURE__ */ new Set();
           binaryExprMap = /* @__PURE__ */ new Map();
@@ -35336,7 +35336,7 @@ class Inliner {
         if (changed) {
           return;
         }
-        if (!(instr instanceof CallInstruction)) {
+        if (!(instr instanceof CallInstruction$1)) {
           return;
         }
         if (instr.methodName === curMethodName) {
@@ -36429,7 +36429,7 @@ class WebBuilder {
     }
     exploredBlocks.add(curBlock.label);
     curBlock.instructions.forEach((instr) => {
-      if (instr instanceof CallInstruction) {
+      if (instr instanceof CallInstruction$1) {
         this.handleCallKilledReges(instr);
       }
       liveWebs.forEach((web) => {
@@ -74949,156 +74949,176 @@ class WebCompiler {
     }, 500);
   }
 }
+class Instruction2 {
+  constructor() {
+    this.successor = null;
+  }
+  setSuccessor(successor) {
+    this.successor = successor;
+  }
+  getSuccessor() {
+    return this.successor;
+  }
+}
+class MovInstruction extends Instruction2 {
+  constructor(line) {
+    super();
+    this.line = line;
+  }
+  execute() {
+    console.log(`Executing MOV: ${this.line}`);
+  }
+  toString() {
+    return this.line;
+  }
+}
+class AddInstruction extends Instruction2 {
+  constructor(line) {
+    super();
+    this.line = line;
+  }
+  execute() {
+    console.log(`Executing ADD: ${this.line}`);
+  }
+  toString() {
+    return this.line;
+  }
+}
+class SubInstruction extends Instruction2 {
+  constructor(line) {
+    super();
+    this.line = line;
+  }
+  execute() {
+    console.log(`Executing SUB: ${this.line}`);
+  }
+  toString() {
+    return this.line;
+  }
+}
+class MulInstruction extends Instruction2 {
+  constructor(line) {
+    super();
+    this.line = line;
+  }
+  execute() {
+    console.log(`Executing MUL/IMUL: ${this.line}`);
+  }
+  toString() {
+    return this.line;
+  }
+}
+class DivInstruction extends Instruction2 {
+  constructor(line) {
+    super();
+    this.line = line;
+  }
+  execute() {
+    console.log(`Executing DIV/IDIV: ${this.line}`);
+  }
+  toString() {
+    return this.line;
+  }
+}
+class AndInstruction extends Instruction2 {
+  constructor(line) {
+    super();
+    this.line = line;
+  }
+  execute() {
+    console.log(`Executing AND: ${this.line}`);
+  }
+  toString() {
+    return this.line;
+  }
+}
+class OrInstruction extends Instruction2 {
+  constructor(line) {
+    super();
+    this.line = line;
+  }
+  execute() {
+    console.log(`Executing OR: ${this.line}`);
+  }
+  toString() {
+    return this.line;
+  }
+}
+class CallInstruction2 extends Instruction2 {
+  constructor(line) {
+    super();
+    this.line = line;
+  }
+  execute() {
+    console.log(`Executing CALL: ${this.line}`);
+  }
+  toString() {
+    return this.line;
+  }
+}
+class UnknownInstruction extends Instruction2 {
+  constructor(line) {
+    super();
+    this.line = line;
+  }
+  execute() {
+    console.log(`Unknown instruction: ${this.line}`);
+  }
+  toString() {
+    return this.line;
+  }
+}
 class X86Interpreter {
   constructor() {
-    this.registers = { rax: 0, rbx: 0, rcx: 0, rdx: 0, rsi: 0, rdi: 0, r8: 0, r9: 0, r10: 0, r11: 0, r12: 0 };
-    this.memory = {};
-    this.strings = {};
-    this.output = "";
-    this.stack = [];
-    this.rbp = 1e3;
+    this.currentInstruction = null;
+    this.instructions = [];
+    this.currentInstruction = null;
   }
-  getRegisterValue(reg) {
-    const regMap = {
-      "eax": "rax",
-      "ebx": "rbx",
-      "ecx": "rcx",
-      "edx": "rdx",
-      "esi": "rsi",
-      "edi": "rdi",
-      "r8d": "r8",
-      "r9d": "r9",
-      "r10d": "r10",
-      "r11d": "r11",
-      "r12d": "r12"
-    };
-    const actualReg = regMap[reg] || reg;
-    return this.registers[actualReg] || 0;
-  }
-  setRegisterValue(reg, value) {
-    const regMap = {
-      "eax": "rax",
-      "ebx": "rbx",
-      "ecx": "rcx",
-      "edx": "rdx",
-      "esi": "rsi",
-      "edi": "rdi",
-      "r8d": "r8",
-      "r9d": "r9",
-      "r10d": "r10",
-      "r11d": "r11",
-      "r12d": "r12"
-    };
-    const actualReg = regMap[reg] || reg;
-    this.registers[actualReg] = value;
-  }
-  extractStringLiterals(assembly) {
-    const stringMatches = assembly.match(/string_literal_\d+:\s*\.string\s*"([^"]+)"/g);
-    if (stringMatches) {
-      stringMatches.forEach((match2) => {
-        const labelMatch = match2.match(/string_literal_(\d+):\s*\.string\s*"([^"]+)"/);
-        if (labelMatch) {
-          this.strings[`string_literal_${labelMatch[1]}`] = labelMatch[2];
-        }
-      });
+  parseInstructions(assembly) {
+    const lines = assembly.split("\n").map((line) => line.trim()).filter((line) => {
+      return line && !line.includes(":") && !line.startsWith(".") && !line.includes(".string");
+    });
+    this.instructions = lines.map((line) => this.parseInstruction(line));
+    for (let i2 = 0; i2 < this.instructions.length - 1; i2++) {
+      this.instructions[i2].setSuccessor(this.instructions[i2 + 1]);
     }
-  }
-  processInstruction(instruction) {
-    const trimmed = instruction.trim();
-    const leaStringMatch = trimmed.match(/lea\s+(string_literal_\d+)\(%rip\),\s*%(\w+)/);
-    if (leaStringMatch) {
-      this.registers.rdi = this.strings[leaStringMatch[1]] || leaStringMatch[1];
-      return;
-    }
-    const leaArrayMatch = trimmed.match(/lea\s+(-?\d+)\(%rbp,%(\w+),(\d+)\),\s*%(\w+)/);
-    if (leaArrayMatch) {
-      const offset = parseInt(leaArrayMatch[1]);
-      const indexValue = this.getRegisterValue(leaArrayMatch[2]);
-      const scale2 = parseInt(leaArrayMatch[3]);
-      const address = this.rbp + offset + indexValue * scale2;
-      this.setRegisterValue(leaArrayMatch[4], address);
-      return;
-    }
-    const movImmMatch = trimmed.match(/movl\s+\$(\d+),\s*%(\w+)/);
-    if (movImmMatch) {
-      this.setRegisterValue(movImmMatch[2], parseInt(movImmMatch[1]));
-      return;
-    }
-    const movRegMatch = trimmed.match(/movl\s+%(\w+),\s*%(\w+)/);
-    if (movRegMatch) {
-      this.setRegisterValue(movRegMatch[2], this.getRegisterValue(movRegMatch[1]));
-      return;
-    }
-    const movRegToStackMatch = trimmed.match(/movl\s+%(\w+),\s*(-?\d+)\(%rbp\)/);
-    if (movRegToStackMatch) {
-      const value = this.getRegisterValue(movRegToStackMatch[1]);
-      const offset = parseInt(movRegToStackMatch[2]);
-      const address = this.rbp + offset;
-      this.memory[address] = value;
-      return;
-    }
-    const movStackToRegMatch = trimmed.match(/movl\s+(-?\d+)\(%rbp\),\s*%(\w+)/);
-    if (movStackToRegMatch) {
-      const offset = parseInt(movStackToRegMatch[1]);
-      const address = this.rbp + offset;
-      const value = this.memory[address] || 0;
-      this.setRegisterValue(movStackToRegMatch[2], value);
-      return;
-    }
-    const movMemToRegMatch = trimmed.match(/movl\s+\(%(\w+)\),\s*%(\w+)/);
-    if (movMemToRegMatch) {
-      const address = this.getRegisterValue(movMemToRegMatch[1]);
-      const value = this.memory[address] || 0;
-      this.setRegisterValue(movMemToRegMatch[2], value);
-      return;
-    }
-    const movRegToMemMatch = trimmed.match(/movl\s+%(\w+),\s*\(%(\w+)\)/);
-    if (movRegToMemMatch) {
-      const value = this.getRegisterValue(movRegToMemMatch[1]);
-      const address = this.getRegisterValue(movRegToMemMatch[2]);
-      this.memory[address] = value;
-      return;
-    }
-    const xorMatch = trimmed.match(/xorl\s+%(\w+),\s*%(\w+)/);
-    if (xorMatch && xorMatch[1] === xorMatch[2]) {
-      this.setRegisterValue(xorMatch[1], 0);
-      return;
-    }
-    const addMatch = trimmed.match(/addl\s+%(\w+),\s*%(\w+)/);
-    if (addMatch) {
-      const val1 = this.getRegisterValue(addMatch[1]);
-      const val2 = this.getRegisterValue(addMatch[2]);
-      this.setRegisterValue(addMatch[2], val1 + val2);
-      return;
-    }
-    if (trimmed === "call printf") {
-      this.handlePrintf();
-    }
-  }
-  handlePrintf() {
-    const formatStr = this.registers.rdi;
-    if (typeof formatStr === "string") {
-      let output2 = formatStr;
-      const args = [this.registers.rsi, this.registers.rdx, this.registers.rcx, this.registers.r8, this.registers.r9];
-      let argIndex = 0;
-      output2 = output2.replace(/%d/g, () => {
-        return argIndex < args.length ? args[argIndex++].toString() : "%d";
-      });
-      output2 = output2.replace(/\\n/g, "\n");
-      this.output += output2;
+    if (this.instructions.length > 0) {
+      this.instructions[this.instructions.length - 1].setSuccessor(null);
     }
   }
   execute(assembly) {
-    this.output = "";
-    this.registers = { rax: 0, rbx: 0, rcx: 0, rdx: 0, rsi: 0, rdi: 0, r8: 0, r9: 0, r10: 0, r11: 0, r12: 0 };
-    this.memory = {};
-    this.strings = {};
-    this.extractStringLiterals(assembly);
-    const lines = assembly.split("\n").filter((line) => line.trim() && !line.includes(":") && !line.startsWith("."));
-    for (const line of lines) {
-      this.processInstruction(line);
+    console.log("Starting execution...");
+    this.parseInstructions(assembly);
+    this.currentInstruction = this.instructions.length > 0 ? this.instructions[0] : null;
+    console.log(`Found ${this.instructions.length} instructions`);
+    while (this.currentInstruction !== null) {
+      this.currentInstruction.execute();
+      this.currentInstruction = this.currentInstruction.getSuccessor();
     }
-    return this.output || "Program executed (no output generated)";
+    console.log("Execution complete");
+    return "Program executed (logging to console)";
+  }
+  parseInstruction(line) {
+    const trimmed = line.trim().toLowerCase();
+    if (trimmed.startsWith("mov")) {
+      return new MovInstruction(line);
+    } else if (trimmed.startsWith("add")) {
+      return new AddInstruction(line);
+    } else if (trimmed.startsWith("sub")) {
+      return new SubInstruction(line);
+    } else if (trimmed.startsWith("mul") || trimmed.startsWith("imul")) {
+      return new MulInstruction(line);
+    } else if (trimmed.startsWith("div") || trimmed.startsWith("idiv")) {
+      return new DivInstruction(line);
+    } else if (trimmed.startsWith("and")) {
+      return new AndInstruction(line);
+    } else if (trimmed.startsWith("or")) {
+      return new OrInstruction(line);
+    } else if (trimmed.startsWith("call")) {
+      return new CallInstruction2(line);
+    } else {
+      return new UnknownInstruction(line);
+    }
   }
 }
 const CodeEditor = ({ value, onChange, syntaxErrors }) => {
