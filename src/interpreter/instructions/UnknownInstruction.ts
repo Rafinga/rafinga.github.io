@@ -1,15 +1,16 @@
 import { Instruction } from './Instruction';
+import { Memory } from '../Memory';
 
 export class UnknownInstruction extends Instruction {
-  constructor(private line: string) {
-    super();
+  constructor(line: string, memory: Memory) {
+    super(memory);
   }
   
   execute(): void {
-    console.log(`Unknown instruction: ${this.line}`);
+    console.log(`Unknown instruction - skipping`);
   }
   
   toString(): string {
-    return this.line;
+    return `UNKNOWN`;
   }
 }

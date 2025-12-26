@@ -1,15 +1,16 @@
-import { Instruction } from './Instruction';
+import { BinaryInstruction } from './BinaryInstruction';
+import { Memory } from '../Memory';
 
-export class AddInstruction extends Instruction {
-  constructor(private line: string) {
-    super();
+export class AddInstruction extends BinaryInstruction {
+  constructor(line: string, memory: Memory) {
+    super(line, memory);
   }
   
-  execute(): void {
-    console.log(`Executing ADD: ${this.line}`);
+  executeOperation(): bigint {
+    return this.operandValues[0] + this.operandValues[1];
   }
   
   toString(): string {
-    return this.line;
+    return `ADD ${this.operandValues[0]} + ${this.operandValues[1]}`;
   }
 }

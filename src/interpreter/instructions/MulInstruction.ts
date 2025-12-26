@@ -1,15 +1,16 @@
-import { Instruction } from './Instruction';
+import { BinaryInstruction } from './BinaryInstruction';
+import { Memory } from '../Memory';
 
-export class MulInstruction extends Instruction {
-  constructor(private line: string) {
-    super();
+export class MulInstruction extends BinaryInstruction {
+  constructor(line: string, memory: Memory) {
+    super(line, memory);
   }
   
-  execute(): void {
-    console.log(`Executing MUL/IMUL: ${this.line}`);
+  executeOperation(): bigint {
+    return this.operandValues[0] * this.operandValues[1];
   }
   
   toString(): string {
-    return this.line;
+    return `MUL ${this.operandValues[0]} * ${this.operandValues[1]}`;
   }
 }

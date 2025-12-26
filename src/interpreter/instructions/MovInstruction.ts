@@ -1,15 +1,16 @@
-import { Instruction } from './Instruction';
+import { BinaryInstruction } from './BinaryInstruction';
+import { Memory } from '../Memory';
 
-export class MovInstruction extends Instruction {
-  constructor(private line: string) {
-    super();
+export class MovInstruction extends BinaryInstruction {
+  constructor(line: string, memory: Memory) {
+    super(line, memory);
   }
   
-  execute(): void {
-    console.log(`Executing MOV: ${this.line}`);
+  executeOperation(): bigint {
+    return this.operandValues[0];
   }
   
   toString(): string {
-    return this.line;
+    return `MOV ${this.operandValues[0]} -> destination`;
   }
 }

@@ -1,15 +1,16 @@
-import { Instruction } from './Instruction';
+import { BinaryInstruction } from './BinaryInstruction';
+import { Memory } from '../Memory';
 
-export class OrInstruction extends Instruction {
-  constructor(private line: string) {
-    super();
+export class OrInstruction extends BinaryInstruction {
+  constructor(line: string, memory: Memory) {
+    super(line, memory);
   }
   
-  execute(): void {
-    console.log(`Executing OR: ${this.line}`);
+  executeOperation(): bigint {
+    return this.operandValues[0] | this.operandValues[1];
   }
   
   toString(): string {
-    return this.line;
+    return `OR ${this.operandValues[0]} | ${this.operandValues[1]}`;
   }
 }

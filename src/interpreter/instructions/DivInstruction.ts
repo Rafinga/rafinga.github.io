@@ -1,15 +1,16 @@
-import { Instruction } from './Instruction';
+import { BinaryInstruction } from './BinaryInstruction';
+import { Memory } from '../Memory';
 
-export class DivInstruction extends Instruction {
-  constructor(private line: string) {
-    super();
+export class DivInstruction extends BinaryInstruction {
+  constructor(line: string, memory: Memory) {
+    super(line, memory);
   }
   
-  execute(): void {
-    console.log(`Executing DIV/IDIV: ${this.line}`);
+  executeOperation(): bigint {
+    return this.operandValues[1] / this.operandValues[0];
   }
   
   toString(): string {
-    return this.line;
+    return `DIV ${this.operandValues[1]} / ${this.operandValues[0]}`;
   }
 }

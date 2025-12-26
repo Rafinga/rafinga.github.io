@@ -1,15 +1,17 @@
 import { Instruction } from './Instruction';
+import { Memory } from '../Memory';
 
 export class CallInstruction extends Instruction {
-  constructor(private line: string) {
-    super();
+  constructor(line: string, memory: Memory) {
+    super(line, memory);
   }
   
-  execute(): void {
-    console.log(`Executing CALL: ${this.line}`);
+  execute(): bigint {
+    console.log(`CALL instruction not implemented yet`);
+    return 0n;
   }
   
   toString(): string {
-    return this.line;
+    return `CALL (not implemented)`;
   }
 }

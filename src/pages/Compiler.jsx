@@ -247,7 +247,21 @@ void main() {
               {showOptimizations && (
                 <div className="optimization-menu">
                   {optimizationOptions.map((opt) => (
-                    <label key={opt.key} className="optimization-option">
+                    <label 
+                      key={opt.key} 
+                      className="optimization-option"
+                      tabIndex={0}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          if (optimizations.includes(opt.key)) {
+                            setOptimizations(optimizations.filter((o) => o !== opt.key));
+                          } else {
+                            setOptimizations([...optimizations, opt.key]);
+                          }
+                        }
+                      }}
+                    >
                       <input
                         type="checkbox"
                         checked={optimizations.includes(opt.key)}
