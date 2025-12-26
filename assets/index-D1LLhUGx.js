@@ -67415,16 +67415,16 @@ function require_Stack() {
   if (hasRequired_Stack) return _Stack;
   hasRequired_Stack = 1;
   var ListCache = require_ListCache(), stackClear = require_stackClear(), stackDelete = require_stackDelete(), stackGet = require_stackGet(), stackHas = require_stackHas(), stackSet = require_stackSet();
-  function Stack(entries) {
+  function Stack2(entries) {
     var data4 = this.__data__ = new ListCache(entries);
     this.size = data4.size;
   }
-  Stack.prototype.clear = stackClear;
-  Stack.prototype["delete"] = stackDelete;
-  Stack.prototype.get = stackGet;
-  Stack.prototype.has = stackHas;
-  Stack.prototype.set = stackSet;
-  _Stack = Stack;
+  Stack2.prototype.clear = stackClear;
+  Stack2.prototype["delete"] = stackDelete;
+  Stack2.prototype.get = stackGet;
+  Stack2.prototype.has = stackHas;
+  Stack2.prototype.set = stackSet;
+  _Stack = Stack2;
   return _Stack;
 }
 var _arrayEach;
@@ -68394,7 +68394,7 @@ var hasRequired_baseClone;
 function require_baseClone() {
   if (hasRequired_baseClone) return _baseClone;
   hasRequired_baseClone = 1;
-  var Stack = require_Stack(), arrayEach = require_arrayEach(), assignValue = require_assignValue(), baseAssign = require_baseAssign(), baseAssignIn = require_baseAssignIn(), cloneBuffer = require_cloneBuffer(), copyArray3 = require_copyArray(), copySymbols = require_copySymbols(), copySymbolsIn = require_copySymbolsIn(), getAllKeys = require_getAllKeys(), getAllKeysIn = require_getAllKeysIn(), getTag = require_getTag(), initCloneArray = require_initCloneArray(), initCloneByTag = require_initCloneByTag(), initCloneObject = require_initCloneObject(), isArray = requireIsArray(), isBuffer2 = requireIsBuffer(), isMap = requireIsMap(), isObject = requireIsObject(), isSet = requireIsSet(), keys = requireKeys(), keysIn = requireKeysIn();
+  var Stack2 = require_Stack(), arrayEach = require_arrayEach(), assignValue = require_assignValue(), baseAssign = require_baseAssign(), baseAssignIn = require_baseAssignIn(), cloneBuffer = require_cloneBuffer(), copyArray3 = require_copyArray(), copySymbols = require_copySymbols(), copySymbolsIn = require_copySymbolsIn(), getAllKeys = require_getAllKeys(), getAllKeysIn = require_getAllKeysIn(), getTag = require_getTag(), initCloneArray = require_initCloneArray(), initCloneByTag = require_initCloneByTag(), initCloneObject = require_initCloneObject(), isArray = requireIsArray(), isBuffer2 = requireIsBuffer(), isMap = requireIsMap(), isObject = requireIsObject(), isSet = requireIsSet(), keys = requireKeys(), keysIn = requireKeysIn();
   var CLONE_DEEP_FLAG = 1, CLONE_FLAT_FLAG = 2, CLONE_SYMBOLS_FLAG = 4;
   var argsTag = "[object Arguments]", arrayTag = "[object Array]", boolTag = "[object Boolean]", dateTag = "[object Date]", errorTag = "[object Error]", funcTag = "[object Function]", genTag = "[object GeneratorFunction]", mapTag = "[object Map]", numberTag = "[object Number]", objectTag = "[object Object]", regexpTag = "[object RegExp]", setTag = "[object Set]", stringTag = "[object String]", symbolTag = "[object Symbol]", weakMapTag = "[object WeakMap]";
   var arrayBufferTag = "[object ArrayBuffer]", dataViewTag = "[object DataView]", float32Tag = "[object Float32Array]", float64Tag = "[object Float64Array]", int8Tag = "[object Int8Array]", int16Tag = "[object Int16Array]", int32Tag = "[object Int32Array]", uint8Tag = "[object Uint8Array]", uint8ClampedTag = "[object Uint8ClampedArray]", uint16Tag = "[object Uint16Array]", uint32Tag = "[object Uint32Array]";
@@ -68435,7 +68435,7 @@ function require_baseClone() {
         result = initCloneByTag(value, tag, isDeep);
       }
     }
-    stack || (stack = new Stack());
+    stack || (stack = new Stack2());
     var stacked = stack.get(value);
     if (stacked) {
       return stacked;
@@ -68902,7 +68902,7 @@ var hasRequired_baseIsEqualDeep;
 function require_baseIsEqualDeep() {
   if (hasRequired_baseIsEqualDeep) return _baseIsEqualDeep;
   hasRequired_baseIsEqualDeep = 1;
-  var Stack = require_Stack(), equalArrays = require_equalArrays(), equalByTag = require_equalByTag(), equalObjects = require_equalObjects(), getTag = require_getTag(), isArray = requireIsArray(), isBuffer2 = requireIsBuffer(), isTypedArray = requireIsTypedArray();
+  var Stack2 = require_Stack(), equalArrays = require_equalArrays(), equalByTag = require_equalByTag(), equalObjects = require_equalObjects(), getTag = require_getTag(), isArray = requireIsArray(), isBuffer2 = requireIsBuffer(), isTypedArray = requireIsTypedArray();
   var COMPARE_PARTIAL_FLAG = 1;
   var argsTag = "[object Arguments]", arrayTag = "[object Array]", objectTag = "[object Object]";
   var objectProto = Object.prototype;
@@ -68920,21 +68920,21 @@ function require_baseIsEqualDeep() {
       objIsObj = false;
     }
     if (isSameTag && !objIsObj) {
-      stack || (stack = new Stack());
+      stack || (stack = new Stack2());
       return objIsArr || isTypedArray(object3) ? equalArrays(object3, other, bitmask, customizer, equalFunc, stack) : equalByTag(object3, other, objTag, bitmask, customizer, equalFunc, stack);
     }
     if (!(bitmask & COMPARE_PARTIAL_FLAG)) {
       var objIsWrapped = objIsObj && hasOwnProperty.call(object3, "__wrapped__"), othIsWrapped = othIsObj && hasOwnProperty.call(other, "__wrapped__");
       if (objIsWrapped || othIsWrapped) {
         var objUnwrapped = objIsWrapped ? object3.value() : object3, othUnwrapped = othIsWrapped ? other.value() : other;
-        stack || (stack = new Stack());
+        stack || (stack = new Stack2());
         return equalFunc(objUnwrapped, othUnwrapped, bitmask, customizer, stack);
       }
     }
     if (!isSameTag) {
       return false;
     }
-    stack || (stack = new Stack());
+    stack || (stack = new Stack2());
     return equalObjects(object3, other, bitmask, customizer, equalFunc, stack);
   }
   _baseIsEqualDeep = baseIsEqualDeep;
@@ -68963,7 +68963,7 @@ var hasRequired_baseIsMatch;
 function require_baseIsMatch() {
   if (hasRequired_baseIsMatch) return _baseIsMatch;
   hasRequired_baseIsMatch = 1;
-  var Stack = require_Stack(), baseIsEqual = require_baseIsEqual();
+  var Stack2 = require_Stack(), baseIsEqual = require_baseIsEqual();
   var COMPARE_PARTIAL_FLAG = 1, COMPARE_UNORDERED_FLAG = 2;
   function baseIsMatch(object3, source, matchData, customizer) {
     var index = matchData.length, length = index, noCustomizer = !customizer;
@@ -68985,7 +68985,7 @@ function require_baseIsMatch() {
           return false;
         }
       } else {
-        var stack = new Stack();
+        var stack = new Stack2();
         if (customizer) {
           var result = customizer(objValue, srcValue, key, object3, source, stack);
         }
@@ -71547,13 +71547,13 @@ var hasRequired_baseMerge;
 function require_baseMerge() {
   if (hasRequired_baseMerge) return _baseMerge;
   hasRequired_baseMerge = 1;
-  var Stack = require_Stack(), assignMergeValue = require_assignMergeValue(), baseFor = require_baseFor(), baseMergeDeep = require_baseMergeDeep(), isObject = requireIsObject(), keysIn = requireKeysIn(), safeGet = require_safeGet();
+  var Stack2 = require_Stack(), assignMergeValue = require_assignMergeValue(), baseFor = require_baseFor(), baseMergeDeep = require_baseMergeDeep(), isObject = requireIsObject(), keysIn = requireKeysIn(), safeGet = require_safeGet();
   function baseMerge(object3, source, srcIndex, customizer, stack) {
     if (object3 === source) {
       return;
     }
     baseFor(source, function(srcValue, key) {
-      stack || (stack = new Stack());
+      stack || (stack = new Stack2());
       if (isObject(srcValue)) {
         baseMergeDeep(object3, source, key, srcIndex, baseMerge, customizer, stack);
       } else {
@@ -74950,8 +74950,9 @@ class WebCompiler {
   }
 }
 class Instruction2 {
-  constructor() {
+  constructor(memory) {
     this.successor = null;
+    this.memory = memory;
   }
   setSuccessor(successor) {
     this.successor = successor;
@@ -74960,112 +74961,279 @@ class Instruction2 {
     return this.successor;
   }
 }
-class MovInstruction extends Instruction2 {
-  constructor(line) {
-    super();
-    this.line = line;
+class BinaryInstruction extends Instruction2 {
+  constructor(line, memory) {
+    super(memory);
+    const { operands, isLong } = this.parseInstruction(line);
+    this.isLong = isLong;
+    const size3 = isLong ? 8 : 4;
+    this.operandValues = operands.map((op) => this.memory.read(op, size3));
+    this.destination = operands[operands.length - 1];
+    const result = this.executeOperation();
+    this.writeResult(result);
   }
   execute() {
-    console.log(`Executing MOV: ${this.line}`);
   }
-  toString() {
-    return this.line;
+  writeResult(value) {
+    const size3 = this.isLong ? 8 : 4;
+    this.memory.write(this.destination, value, size3);
+  }
+  parseInstruction(line) {
+    const parts = line.trim().split(/\s+/);
+    const instruction = parts[0];
+    const isLong = instruction.endsWith("q");
+    if (parts.length < 2) {
+      return { operands: [], isLong };
+    }
+    const operandStr = parts.slice(1).join(" ");
+    const operands = operandStr.split(",").map((op) => op.trim());
+    return { operands, isLong };
   }
 }
-class AddInstruction extends Instruction2 {
-  constructor(line) {
-    super();
-    this.line = line;
+class MovInstruction extends BinaryInstruction {
+  constructor(line, memory) {
+    super(line, memory);
   }
-  execute() {
-    console.log(`Executing ADD: ${this.line}`);
+  executeOperation() {
+    return this.operandValues[0];
   }
   toString() {
-    return this.line;
+    return `MOV ${this.operandValues[0]} -> destination`;
   }
 }
-class SubInstruction extends Instruction2 {
-  constructor(line) {
-    super();
-    this.line = line;
+class AddInstruction extends BinaryInstruction {
+  constructor(line, memory) {
+    super(line, memory);
   }
-  execute() {
-    console.log(`Executing SUB: ${this.line}`);
+  executeOperation() {
+    return this.operandValues[0] + this.operandValues[1];
   }
   toString() {
-    return this.line;
+    return `ADD ${this.operandValues[0]} + ${this.operandValues[1]}`;
   }
 }
-class MulInstruction extends Instruction2 {
-  constructor(line) {
-    super();
-    this.line = line;
+class SubInstruction extends BinaryInstruction {
+  constructor(line, memory) {
+    super(line, memory);
   }
-  execute() {
-    console.log(`Executing MUL/IMUL: ${this.line}`);
+  executeOperation() {
+    return this.operandValues[1] - this.operandValues[0];
   }
   toString() {
-    return this.line;
+    return `SUB ${this.operandValues[1]} - ${this.operandValues[0]}`;
   }
 }
-class DivInstruction extends Instruction2 {
-  constructor(line) {
-    super();
-    this.line = line;
+class MulInstruction extends BinaryInstruction {
+  constructor(line, memory) {
+    super(line, memory);
   }
-  execute() {
-    console.log(`Executing DIV/IDIV: ${this.line}`);
+  executeOperation() {
+    return this.operandValues[0] * this.operandValues[1];
   }
   toString() {
-    return this.line;
+    return `MUL ${this.operandValues[0]} * ${this.operandValues[1]}`;
   }
 }
-class AndInstruction extends Instruction2 {
-  constructor(line) {
-    super();
-    this.line = line;
+class DivInstruction extends BinaryInstruction {
+  constructor(line, memory) {
+    super(line, memory);
   }
-  execute() {
-    console.log(`Executing AND: ${this.line}`);
+  executeOperation() {
+    return this.operandValues[1] / this.operandValues[0];
   }
   toString() {
-    return this.line;
+    return `DIV ${this.operandValues[1]} / ${this.operandValues[0]}`;
   }
 }
-class OrInstruction extends Instruction2 {
-  constructor(line) {
-    super();
-    this.line = line;
+class AndInstruction extends BinaryInstruction {
+  constructor(line, memory) {
+    super(line, memory);
   }
-  execute() {
-    console.log(`Executing OR: ${this.line}`);
+  executeOperation() {
+    return this.operandValues[0] & this.operandValues[1];
   }
   toString() {
-    return this.line;
+    return `AND ${this.operandValues[0]} & ${this.operandValues[1]}`;
+  }
+}
+class OrInstruction extends BinaryInstruction {
+  constructor(line, memory) {
+    super(line, memory);
+  }
+  executeOperation() {
+    return this.operandValues[0] | this.operandValues[1];
+  }
+  toString() {
+    return `OR ${this.operandValues[0]} | ${this.operandValues[1]}`;
   }
 }
 class CallInstruction2 extends Instruction2 {
-  constructor(line) {
-    super();
-    this.line = line;
+  constructor(line, memory) {
+    super(line, memory);
   }
   execute() {
-    console.log(`Executing CALL: ${this.line}`);
+    console.log(`CALL instruction not implemented yet`);
+    return 0n;
   }
   toString() {
-    return this.line;
+    return `CALL (not implemented)`;
   }
 }
 class UnknownInstruction extends Instruction2 {
-  constructor(line) {
-    super();
-    this.line = line;
+  constructor(line, memory) {
+    super(memory);
   }
   execute() {
-    console.log(`Unknown instruction: ${this.line}`);
+    console.log(`Unknown instruction - skipping`);
   }
   toString() {
-    return this.line;
+    return `UNKNOWN`;
+  }
+}
+class Register {
+  constructor(registerMap) {
+    this.value = 0;
+    const [name64, name32] = registerMap.split(",");
+    this.name64 = name64;
+    this.name32 = name32;
+  }
+  getValue() {
+    return this.value;
+  }
+  setValue(value) {
+    this.value = value;
+  }
+  toString() {
+    return `${this.name64}(${this.name32}): ${this.value}`;
+  }
+}
+var RegisterMap = /* @__PURE__ */ ((RegisterMap2) => {
+  RegisterMap2["RAX"] = "rax,eax";
+  RegisterMap2["RBX"] = "rbx,ebx";
+  RegisterMap2["RCX"] = "rcx,ecx";
+  RegisterMap2["RDX"] = "rdx,edx";
+  RegisterMap2["RSI"] = "rsi,esi";
+  RegisterMap2["RDI"] = "rdi,edi";
+  RegisterMap2["R8"] = "r8,r8d";
+  RegisterMap2["R9"] = "r9,r9d";
+  RegisterMap2["R10"] = "r10,r10d";
+  RegisterMap2["R11"] = "r11,r11d";
+  RegisterMap2["R12"] = "r12,r12d";
+  RegisterMap2["R13"] = "r13,r13d";
+  RegisterMap2["R14"] = "r14,r14d";
+  RegisterMap2["R15"] = "r15,r15d";
+  return RegisterMap2;
+})(RegisterMap || {});
+class Registers {
+  constructor() {
+    this.registers = /* @__PURE__ */ new Map();
+    Object.values(RegisterMap).forEach((regMap) => {
+      const register = new Register(regMap);
+      this.registers.set(register.name64, register);
+      this.registers.set(register.name32, register);
+    });
+  }
+  getRegister(name) {
+    const cleanName = name.startsWith("%") ? name.slice(1) : name;
+    return this.registers.get(cleanName);
+  }
+  getValue(name) {
+    const register = this.getRegister(name);
+    return register ? register.getValue() : 0;
+  }
+  setValue(name, value) {
+    const register = this.getRegister(name);
+    if (register) {
+      register.setValue(value);
+    }
+  }
+  getAllRegisters() {
+    const uniqueRegisters = /* @__PURE__ */ new Set();
+    this.registers.forEach((reg) => uniqueRegisters.add(reg));
+    return Array.from(uniqueRegisters);
+  }
+}
+class Stack {
+  constructor() {
+    this.memory = /* @__PURE__ */ new Map();
+  }
+  write(address, value, size3) {
+    const alignedAddr = address & ~0x7n;
+    const offset = Number(address & 0x7n);
+    if (offset + size3 <= 8) {
+      const existing = this.memory.get(alignedAddr) || 0n;
+      const mask = (1n << BigInt(size3 * 8)) - 1n;
+      const shiftedValue = (value & mask) << BigInt(offset * 8);
+      const clearMask = ~(mask << BigInt(offset * 8));
+      this.memory.set(alignedAddr, existing & clearMask | shiftedValue);
+    } else {
+      const firstSize = 8 - offset;
+      const secondSize = size3 - firstSize;
+      this.write(address, value & (1n << BigInt(firstSize * 8)) - 1n, firstSize);
+      this.write(alignedAddr + 8n, value >> BigInt(firstSize * 8), secondSize);
+    }
+  }
+  read(address, size3) {
+    const alignedAddr = address & ~0x7n;
+    const offset = Number(address & 0x7n);
+    if (offset + size3 <= 8) {
+      const block = this.memory.get(alignedAddr) || 0n;
+      const mask = (1n << BigInt(size3 * 8)) - 1n;
+      return block >> BigInt(offset * 8) & mask;
+    } else {
+      const firstSize = 8 - offset;
+      const secondSize = size3 - firstSize;
+      const firstPart = this.read(address, firstSize);
+      const secondPart = this.read(alignedAddr + 8n, secondSize);
+      return firstPart | secondPart << BigInt(firstSize * 8);
+    }
+  }
+  writeMemory(address, value, size3) {
+    this.write(address, value, size3);
+  }
+  readMemory(address, size3) {
+    return this.read(address, size3);
+  }
+}
+class Memory {
+  constructor() {
+    this.registers = new Registers();
+    this.stack = new Stack();
+  }
+  read(addr, length) {
+    if (this.isImmediate(addr)) {
+      return this.parseImmediate(addr);
+    }
+    if (this.isRegister(addr)) {
+      return BigInt(this.registers.getValue(addr));
+    }
+    const memAddr = this.parseMemoryAddress(addr);
+    return this.stack.readMemory(memAddr, length);
+  }
+  write(addr, val, length) {
+    if (this.isRegister(addr)) {
+      this.registers.setValue(addr, Number(val));
+      return;
+    }
+    const memAddr = this.parseMemoryAddress(addr);
+    this.stack.writeMemory(memAddr, val, length);
+  }
+  isRegister(addr) {
+    return !addr.includes("(") && !addr.startsWith("$");
+  }
+  isImmediate(addr) {
+    return addr.startsWith("$");
+  }
+  parseImmediate(addr) {
+    return BigInt(parseInt(addr.slice(1)));
+  }
+  parseMemoryAddress(addr) {
+    const match2 = addr.match(/^([^(]*)\(([^)]+)\)$/);
+    if (!match2) throw new Error(`Invalid memory address format: ${addr}`);
+    const [, offsetStr, regStr] = match2;
+    const baseAddr = BigInt(this.registers.getValue(regStr));
+    const offsetVal = offsetStr ? BigInt(parseInt(offsetStr)) : 0n;
+    return baseAddr + offsetVal;
   }
 }
 class X86Interpreter {
@@ -75073,51 +75241,63 @@ class X86Interpreter {
     this.currentInstruction = null;
     this.instructions = [];
     this.currentInstruction = null;
+    this.memory = new Memory();
   }
   parseInstructions(assembly) {
-    const lines = assembly.split("\n").map((line) => line.trim()).filter((line) => {
+    this.instructions = assembly.split("\n").map((line) => line.trim()).filter((line) => {
       return line && !line.includes(":") && !line.startsWith(".") && !line.includes(".string");
-    });
-    this.instructions = lines.map((line) => this.parseInstruction(line));
+    }).map((line) => this.parseInstruction(line));
     for (let i2 = 0; i2 < this.instructions.length - 1; i2++) {
       this.instructions[i2].setSuccessor(this.instructions[i2 + 1]);
-    }
-    if (this.instructions.length > 0) {
-      this.instructions[this.instructions.length - 1].setSuccessor(null);
     }
   }
   execute(assembly) {
     console.log("Starting execution...");
     this.parseInstructions(assembly);
-    this.currentInstruction = this.instructions.length > 0 ? this.instructions[0] : null;
     console.log(`Found ${this.instructions.length} instructions`);
-    while (this.currentInstruction !== null) {
-      this.currentInstruction.execute();
-      this.currentInstruction = this.currentInstruction.getSuccessor();
-    }
     console.log("Execution complete");
+    this.printMemoryState();
     return "Program executed (logging to console)";
+  }
+  printMemoryState() {
+    console.log("\n=== MEMORY STATE ===");
+    console.log("Registers:");
+    const registers = this.memory["registers"].getAllRegisters();
+    registers.forEach((reg) => {
+      if (reg.getValue() !== 0) {
+        console.log(`  ${reg.toString()}`);
+      }
+    });
+    console.log("Stack Memory:");
+    const stackMemory = this.memory["stack"]["memory"];
+    if (stackMemory.size === 0) {
+      console.log("  (empty)");
+    } else {
+      stackMemory.forEach((value, address) => {
+        console.log(`  0x${address.toString(16)}: ${value}`);
+      });
+    }
   }
   parseInstruction(line) {
     const trimmed = line.trim().toLowerCase();
     if (trimmed.startsWith("mov")) {
-      return new MovInstruction(line);
+      return new MovInstruction(line, this.memory);
     } else if (trimmed.startsWith("add")) {
-      return new AddInstruction(line);
+      return new AddInstruction(line, this.memory);
     } else if (trimmed.startsWith("sub")) {
-      return new SubInstruction(line);
+      return new SubInstruction(line, this.memory);
     } else if (trimmed.startsWith("mul") || trimmed.startsWith("imul")) {
-      return new MulInstruction(line);
+      return new MulInstruction(line, this.memory);
     } else if (trimmed.startsWith("div") || trimmed.startsWith("idiv")) {
-      return new DivInstruction(line);
+      return new DivInstruction(line, this.memory);
     } else if (trimmed.startsWith("and")) {
-      return new AndInstruction(line);
+      return new AndInstruction(line, this.memory);
     } else if (trimmed.startsWith("or")) {
-      return new OrInstruction(line);
+      return new OrInstruction(line, this.memory);
     } else if (trimmed.startsWith("call")) {
-      return new CallInstruction2(line);
+      return new CallInstruction2(line, this.memory);
     } else {
-      return new UnknownInstruction(line);
+      return new UnknownInstruction(line, this.memory);
     }
   }
 }
@@ -75346,25 +75526,43 @@ void main() {
                 children: "Optimizations ▼"
               }
             ),
-            showOptimizations && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "optimization-menu", children: optimizationOptions.map((opt) => /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { className: "optimization-option", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx(
-                "input",
-                {
-                  type: "checkbox",
-                  checked: optimizations.includes(opt.key),
-                  onChange: (e2) => {
-                    if (e2.target.checked) {
-                      setOptimizations([...optimizations, opt.key]);
+            showOptimizations && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "optimization-menu", children: optimizationOptions.map((opt) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              "label",
+              {
+                className: "optimization-option",
+                tabIndex: 0,
+                onKeyDown: (e2) => {
+                  if (e2.key === "Enter" || e2.key === " ") {
+                    e2.preventDefault();
+                    if (optimizations.includes(opt.key)) {
+                      setOptimizations(optimizations.filter((o2) => o2 !== opt.key));
                     } else {
-                      setOptimizations(
-                        optimizations.filter((o2) => o2 !== opt.key)
-                      );
+                      setOptimizations([...optimizations, opt.key]);
                     }
                   }
-                }
-              ),
-              opt.label
-            ] }, opt.key)) })
+                },
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    "input",
+                    {
+                      type: "checkbox",
+                      checked: optimizations.includes(opt.key),
+                      onChange: (e2) => {
+                        if (e2.target.checked) {
+                          setOptimizations([...optimizations, opt.key]);
+                        } else {
+                          setOptimizations(
+                            optimizations.filter((o2) => o2 !== opt.key)
+                          );
+                        }
+                      }
+                    }
+                  ),
+                  opt.label
+                ]
+              },
+              opt.key
+            )) })
           ] })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsx(
