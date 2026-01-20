@@ -26,11 +26,6 @@ export abstract class BinaryInstruction extends Instruction {
     // Already executed in constructor
   }
 
-  protected writeResult(value: bigint): void {
-    const size = this.isLong ? 8 : 4;
-    this.memory.write(this.destination, value, size);
-  }
-
   private parseInstruction(line: string): { operands: string[], isLong: boolean } {
     const parts = line.trim().split(/\s+/);
     const instruction = parts[0];
