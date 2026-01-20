@@ -29980,7 +29980,7 @@ class BasicBlock {
     this.cpOut = /* @__PURE__ */ new Set();
     this.aeIn = /* @__PURE__ */ new Set();
     this.aeOut = /* @__PURE__ */ new Set();
-    this.instructions = [new LabelInstruction(label), ...instructions];
+    this.instructions = [new LabelInstruction$1(label), ...instructions];
     this.phiInstructions = phiInstructions || [];
     this.branchSuccessors = null;
     this.joinSuccessor = null;
@@ -30752,7 +30752,7 @@ class JumpDirectInstruction extends Instruction$1 {
     return new JumpDirectInstruction(this.label, this.target);
   }
 }
-class LabelInstruction extends Instruction$1 {
+let LabelInstruction$1 = class LabelInstruction extends Instruction$1 {
   constructor(label) {
     super();
     this.label = label;
@@ -30765,7 +30765,7 @@ class LabelInstruction extends Instruction$1 {
   duplicate() {
     return new LabelInstruction(this.label);
   }
-}
+};
 class CreateArrayInstruction extends Instruction$1 {
   constructor(name, size3, dataType) {
     super();
@@ -33129,7 +33129,7 @@ ${name}: .skip ${totalReserved * 8}`;
     }
     if (!isOrdered) {
       const labelInstr = basicBlock.instructions[0];
-      if (!(labelInstr instanceof LabelInstruction)) {
+      if (!(labelInstr instanceof LabelInstruction$1)) {
         throw new Error("First instruction is not label instruction");
       }
       labelInstr.label = basicBlock.label;
@@ -33157,7 +33157,7 @@ ${name}: .skip ${totalReserved * 8}`;
       if (instruction instanceof CastInstruction) {
         return this.buildCastInstruction(instruction);
       }
-      if (instruction instanceof LabelInstruction) {
+      if (instruction instanceof LabelInstruction$1) {
         return this.buildLabelInstruction(instruction);
       }
       if (instruction instanceof JumpDirectInstruction) {
@@ -35036,7 +35036,7 @@ class LoopOptimizer {
     const allInstructions = [];
     for (const block of blocks.filter((block2) => block2 !== header)) {
       for (const instr of block.instructions) {
-        if (!(instr instanceof LabelInstruction)) {
+        if (!(instr instanceof LabelInstruction$1)) {
           allInstructions.push(instr);
         }
       }
@@ -35217,7 +35217,7 @@ class Inliner {
     }
     const firstInstr = firstBlock.instructions[0];
     this.removeSuccsAfterReturn(firstBlock, /* @__PURE__ */ new Set());
-    if (!(firstInstr instanceof LabelInstruction)) {
+    if (!(firstInstr instanceof LabelInstruction$1)) {
       throw new Error("First instruction is not label instruction");
     }
     const methodName = firstInstr.label;
@@ -35414,13 +35414,13 @@ class Inliner {
     );
     let startIdx = 0;
     let curInstr = dupBlock.instructions[startIdx];
-    while (curInstr instanceof LabelInstruction || curInstr instanceof CreateArrayInstruction || curInstr instanceof CreateVarInstruction) {
+    while (curInstr instanceof LabelInstruction$1 || curInstr instanceof CreateArrayInstruction || curInstr instanceof CreateVarInstruction) {
       startIdx++;
       curInstr = dupBlock.instructions[startIdx];
     }
     for (let i2 = 0; i2 < params.length; i2++) {
       const curInstr2 = dupBlock.instructions[i2 + startIdx];
-      if (curInstr2 instanceof LabelInstruction || curInstr2 instanceof CreateArrayInstruction || curInstr2 instanceof CreateVarInstruction) {
+      if (curInstr2 instanceof LabelInstruction$1 || curInstr2 instanceof CreateArrayInstruction || curInstr2 instanceof CreateVarInstruction) {
         continue;
       }
       if (!(curInstr2 instanceof CopyInstruction)) {
@@ -35455,7 +35455,7 @@ class Inliner {
     }
     curBlock.label = `${curBlock.label}_${this.inlineCounter}`;
     const labelInstr = curBlock.instructions[0];
-    if (!(labelInstr instanceof LabelInstruction)) {
+    if (!(labelInstr instanceof LabelInstruction$1)) {
       throw new Error("First instruction is not label instruction");
     }
     labelInstr.label = curBlock.label;
@@ -36102,7 +36102,7 @@ class Web {
     this.potRange.clear();
   }
   isLoopingLabel(instr) {
-    if (instr instanceof LabelInstruction) {
+    if (instr instanceof LabelInstruction$1) {
       const labelName = instr.label;
       return labelName.startsWith("for") || labelName.startsWith("while");
     }
@@ -74952,6 +74952,8 @@ class WebCompiler {
 class Instruction2 {
   constructor(memory) {
     this.successor = null;
+    this.isLong = true;
+    this.destination = "fake register";
     this.memory = memory;
   }
   setSuccessor(successor) {
@@ -74960,23 +74962,28 @@ class Instruction2 {
   getSuccessor() {
     return this.successor;
   }
+  writeResult(value) {
+    const size3 = this.isLong ? 8 : 4;
+    this.memory.write(this.destination, value, size3);
+  }
 }
 class BinaryInstruction extends Instruction2 {
   constructor(line, memory) {
     super(memory);
+    this.operandValues = [];
+    this.destination = "";
+    this.isLong = false;
+    this.operands = [];
     const { operands, isLong } = this.parseInstruction(line);
+    this.operands = operands;
     this.isLong = isLong;
-    const size3 = isLong ? 8 : 4;
-    this.operandValues = operands.map((op) => this.memory.read(op, size3));
     this.destination = operands[operands.length - 1];
-    const result = this.executeOperation();
-    this.writeResult(result);
   }
   execute() {
-  }
-  writeResult(value) {
     const size3 = this.isLong ? 8 : 4;
-    this.memory.write(this.destination, value, size3);
+    this.operandValues = this.operands.map((op) => this.memory.read(op, size3));
+    const result = this.executeOperation();
+    this.writeResult(result);
   }
   parseInstruction(line) {
     const parts = line.trim().split(/\s+/);
@@ -75034,15 +75041,30 @@ class MulInstruction extends BinaryInstruction {
     return `MUL ${this.operandValues[0]} * ${this.operandValues[1]}`;
   }
 }
-class DivInstruction extends BinaryInstruction {
+class DivInstruction extends Instruction2 {
   constructor(line, memory) {
-    super(line, memory);
+    super(memory);
+    const parts = line.trim().split(/\s+/);
+    const instruction = parts[0];
+    this.isLong = instruction.endsWith("q");
+    this.divisor = parts[1];
   }
-  executeOperation() {
-    return this.operandValues[1] / this.operandValues[0];
+  execute() {
+    const size3 = this.isLong ? 8 : 4;
+    const dividendReg = this.isLong ? "rax" : "eax";
+    const remainderReg = this.isLong ? "rdx" : "edx";
+    const dividend = BigInt(this.memory.read(dividendReg, size3));
+    const divisorValue = this.memory.read(this.divisor, size3);
+    if (divisorValue === 0n) {
+      throw new Error("Division by zero");
+    }
+    const quotient = dividend / divisorValue;
+    const remainder = dividend % divisorValue;
+    this.memory.write(dividendReg, quotient, size3);
+    this.memory.write(remainderReg, remainder, size3);
   }
   toString() {
-    return `DIV ${this.operandValues[1]} / ${this.operandValues[0]}`;
+    return `DIV ${this.divisor}`;
   }
 }
 class AndInstruction extends BinaryInstruction {
@@ -75073,7 +75095,6 @@ class CallInstruction2 extends Instruction2 {
   }
   execute() {
     console.log(`CALL instruction not implemented yet`);
-    return 0n;
   }
   toString() {
     return `CALL (not implemented)`;
@@ -75088,6 +75109,128 @@ class UnknownInstruction extends Instruction2 {
   }
   toString() {
     return `UNKNOWN`;
+  }
+}
+class LabelInstruction2 extends Instruction2 {
+  constructor(line, memory) {
+    super(memory);
+    this.labelName = line.trim().replace(":", "");
+  }
+  execute() {
+  }
+  toString() {
+    return `LABEL: ${this.labelName}`;
+  }
+}
+class CmpInstruction extends BinaryInstruction {
+  constructor(line, memory, flags) {
+    super(line, memory);
+    this.flags = flags;
+  }
+  executeOperation() {
+    const result = this.operandValues[1] - this.operandValues[0];
+    this.flags.set("zero", result === 0n);
+    this.flags.set("sign", result < 0n);
+    this.flags.set("overflow", false);
+    return 0n;
+  }
+  execute() {
+    const size3 = this.isLong ? 8 : 4;
+    this.operandValues = this.operands.map((op) => this.memory.read(op, size3));
+    this.executeOperation();
+  }
+  toString() {
+    return `CMP ${this.operandValues[0]} with ${this.operandValues[1]}`;
+  }
+}
+class JumpInstruction extends Instruction2 {
+  constructor(line, memory, labelMap, flags) {
+    super(memory);
+    this.labelMap = labelMap;
+    this.flags = flags;
+    const parts = line.trim().split(/\s+/);
+    this.targetLabel = parts[1];
+  }
+  execute() {
+    console.log(`Jump instruction looking for label: ${this.targetLabel}`);
+    console.log(`Available labels:`, Array.from(this.labelMap.keys()));
+    if (this.shouldJump()) {
+      const targetInstruction = this.labelMap.get(this.targetLabel);
+      if (targetInstruction) {
+        this.setSuccessor(targetInstruction);
+      } else {
+        throw new Error(`Label not found: ${this.targetLabel}`);
+      }
+    }
+  }
+  toString() {
+    return `${this.constructor.name} ${this.targetLabel}`;
+  }
+}
+class JmpInstruction extends JumpInstruction {
+  constructor(line, memory, labelMap, flags) {
+    super(line, memory, labelMap, flags);
+  }
+  shouldJump() {
+    return true;
+  }
+}
+class JeInstruction extends JumpInstruction {
+  constructor(line, memory, labelMap, flags) {
+    super(line, memory, labelMap, flags);
+  }
+  shouldJump() {
+    return this.flags.get("zero");
+  }
+}
+class JneInstruction extends JumpInstruction {
+  constructor(line, memory, labelMap, flags) {
+    super(line, memory, labelMap, flags);
+  }
+  shouldJump() {
+    return !this.flags.get("zero");
+  }
+}
+class JlInstruction extends JumpInstruction {
+  constructor(line, memory, labelMap, flags) {
+    super(line, memory, labelMap, flags);
+  }
+  shouldJump() {
+    const sign = this.flags.get("sign");
+    const overflow = this.flags.get("overflow");
+    return sign !== overflow;
+  }
+}
+class JgInstruction extends JumpInstruction {
+  constructor(line, memory, labelMap, flags) {
+    super(line, memory, labelMap, flags);
+  }
+  shouldJump() {
+    const zero = this.flags.get("zero");
+    const sign = this.flags.get("sign");
+    const overflow = this.flags.get("overflow");
+    return !zero && sign === overflow;
+  }
+}
+class JleInstruction extends JumpInstruction {
+  constructor(line, memory, labelMap, flags) {
+    super(line, memory, labelMap, flags);
+  }
+  shouldJump() {
+    const zero = this.flags.get("zero");
+    const sign = this.flags.get("sign");
+    const overflow = this.flags.get("overflow");
+    return zero || sign !== overflow;
+  }
+}
+class JgeInstruction extends JumpInstruction {
+  constructor(line, memory, labelMap, flags) {
+    super(line, memory, labelMap, flags);
+  }
+  shouldJump() {
+    const sign = this.flags.get("sign");
+    const overflow = this.flags.get("overflow");
+    return sign === overflow;
   }
 }
 class Register {
@@ -75239,13 +75382,18 @@ class Memory {
 class X86Interpreter {
   constructor() {
     this.currentInstruction = null;
+    this.labelMap = /* @__PURE__ */ new Map();
+    this.flags = /* @__PURE__ */ new Map();
     this.instructions = [];
     this.currentInstruction = null;
     this.memory = new Memory();
+    this.flags.set("zero", false);
+    this.flags.set("sign", false);
+    this.flags.set("overflow", false);
   }
   parseInstructions(assembly) {
     this.instructions = assembly.split("\n").map((line) => line.trim()).filter((line) => {
-      return line && !line.includes(":") && !line.startsWith(".") && !line.includes(".string");
+      return line && !line.startsWith(".") && !line.includes(".string");
     }).map((line) => this.parseInstruction(line));
     for (let i2 = 0; i2 < this.instructions.length - 1; i2++) {
       this.instructions[i2].setSuccessor(this.instructions[i2 + 1]);
@@ -75255,9 +75403,19 @@ class X86Interpreter {
     console.log("Starting execution...");
     this.parseInstructions(assembly);
     console.log(`Found ${this.instructions.length} instructions`);
+    if (this.instructions.length > 0) {
+      this.executeInstruction(this.instructions[0]);
+    }
     console.log("Execution complete");
     this.printMemoryState();
     return "Program executed (logging to console)";
+  }
+  executeInstruction(instruction) {
+    if (instruction === null) {
+      return;
+    }
+    instruction.execute();
+    this.executeInstruction(instruction.getSuccessor());
   }
   printMemoryState() {
     console.log("\n=== MEMORY STATE ===");
@@ -75280,7 +75438,30 @@ class X86Interpreter {
   }
   parseInstruction(line) {
     const trimmed = line.trim().toLowerCase();
-    if (trimmed.startsWith("mov")) {
+    if (line.trim().endsWith(":")) {
+      console.log(`Found label: ${line.trim()}`);
+      const labelInst = new LabelInstruction2(line, this.memory);
+      console.log(`Adding label to map: ${labelInst.labelName}`);
+      this.labelMap.set(labelInst.labelName, labelInst);
+      return labelInst;
+    }
+    if (trimmed.startsWith("cmp")) {
+      return new CmpInstruction(line, this.memory, this.flags);
+    } else if (trimmed.startsWith("jmp")) {
+      return new JmpInstruction(line, this.memory, this.labelMap, this.flags);
+    } else if (trimmed.startsWith("jne")) {
+      return new JneInstruction(line, this.memory, this.labelMap, this.flags);
+    } else if (trimmed.startsWith("je")) {
+      return new JeInstruction(line, this.memory, this.labelMap, this.flags);
+    } else if (trimmed.startsWith("jl")) {
+      return new JlInstruction(line, this.memory, this.labelMap, this.flags);
+    } else if (trimmed.startsWith("jg")) {
+      return new JgInstruction(line, this.memory, this.labelMap, this.flags);
+    } else if (trimmed.startsWith("jle")) {
+      return new JleInstruction(line, this.memory, this.labelMap, this.flags);
+    } else if (trimmed.startsWith("jge")) {
+      return new JgeInstruction(line, this.memory, this.labelMap, this.flags);
+    } else if (trimmed.startsWith("mov")) {
       return new MovInstruction(line, this.memory);
     } else if (trimmed.startsWith("add")) {
       return new AddInstruction(line, this.memory);
