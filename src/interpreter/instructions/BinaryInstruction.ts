@@ -2,28 +2,29 @@ import { Instruction } from './Instruction';
 import { Memory } from '../Memory';
 
 export abstract class BinaryInstruction extends Instruction {
-  protected operandValues: bigint[];
-  protected destination: string;
-  protected isLong: boolean;
+  protected operandValues: bigint[] = [];
+  protected destination: string = '';
+  protected isLong: boolean = false;
+  private operands: string[] = [];
 
   constructor(line: string, memory: Memory) {
     super(memory);
     const { operands, isLong } = this.parseInstruction(line);
+    this.operands = operands;
     this.isLong = isLong;
-    
-    const size = isLong ? 8 : 4;
-    this.operandValues = operands.map(op => this.memory.read(op, size));
     this.destination = operands[operands.length - 1]; // Last operand is destination
-    
-    // Execute and write result automatically
-    const result = this.executeOperation();
-    this.writeResult(result);
   }
 
   abstract executeOperation(): bigint;
   
   execute(): void {
-    // Already executed in constructor
+    // Read operand values at execution time
+    const size = this.isLong ? 8 : 4;
+    this.operandValues = this.operands.map(op => this.memory.read(op, size));
+    
+    // Execute operation and write result
+    const result = this.executeOperation();
+    this.writeResult(result);
   }
 
   private parseInstruction(line: string): { operands: string[], isLong: boolean } {

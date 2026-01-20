@@ -12,8 +12,6 @@ export class DivInstruction extends Instruction {
     const instruction = parts[0];
     this.isLong = instruction.endsWith('q');
     this.divisor = parts[1];
-    
-    this.execute();
   }
   
   execute(): void {

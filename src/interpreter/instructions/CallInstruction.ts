@@ -6,9 +6,8 @@ export class CallInstruction extends Instruction {
     super(line, memory);
   }
   
-  execute(): bigint {
+  execute(): void {
     console.log(`CALL instruction not implemented yet`);
-    return 0n;
   }
   
   toString(): string {

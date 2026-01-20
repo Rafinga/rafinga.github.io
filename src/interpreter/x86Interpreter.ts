@@ -8,17 +8,27 @@ import { AndInstruction } from './instructions/AndInstruction';
 import { OrInstruction } from './instructions/OrInstruction';
 import { CallInstruction } from './instructions/CallInstruction';
 import { UnknownInstruction } from './instructions/UnknownInstruction';
+import { LabelInstruction } from './instructions/LabelInstruction';
+import { CmpInstruction } from './instructions/CmpInstruction';
+import { JmpInstruction, JeInstruction, JneInstruction, JlInstruction, JgInstruction, JleInstruction, JgeInstruction } from './instructions/ConditionalJumps';
 import { Memory } from './Memory';
 
 class X86Interpreter {
   private instructions: Instruction[];
   private currentInstruction: Instruction | null = null;
   private memory: Memory;
+  private labelMap: Map<string, LabelInstruction> = new Map();
+  private flags: Map<string, boolean> = new Map();
 
   constructor() {
     this.instructions = [];
     this.currentInstruction = null;
     this.memory = new Memory();
+    
+    // Initialize flags
+    this.flags.set('zero', false);
+    this.flags.set('sign', false);
+    this.flags.set('overflow', false);
   }
 
   private parseInstructions(assembly: string): void {
@@ -26,7 +36,6 @@ class X86Interpreter {
       .map(line => line.trim())
       .filter(line => {
         return line && 
-               !line.includes(':') && 
                !line.startsWith('.') && 
                !line.includes('.string');
       }).map(line => this.parseInstruction(line));
@@ -43,12 +52,29 @@ class X86Interpreter {
     this.parseInstructions(assembly);
     
     console.log(`Found ${this.instructions.length} instructions`);
+    
+    // Start recursive execution from first instruction
+    if (this.instructions.length > 0) {
+      this.executeInstruction(this.instructions[0]);
+    }
+    
     console.log('Execution complete');
     
     // Print memory state
     this.printMemoryState();
     
     return "Program executed (logging to console)";
+  }
+
+  private executeInstruction(instruction: Instruction | null): void {
+    if (instruction === null) {
+      return; // Terminate execution
+    }
+    
+    instruction.execute();
+    
+    // Recursively execute successor
+    this.executeInstruction(instruction.getSuccessor());
   }
 
   private printMemoryState(): void {
@@ -75,7 +101,32 @@ class X86Interpreter {
   private parseInstruction(line: string): Instruction {
     const trimmed = line.trim().toLowerCase();
     
-    if (trimmed.startsWith('mov')) {
+    // Check for labels (ends with colon)
+    if (line.trim().endsWith(':')) {
+      console.log(`Found label: ${line.trim()}`);
+      const labelInst = new LabelInstruction(line, this.memory);
+      console.log(`Adding label to map: ${labelInst.labelName}`);
+      this.labelMap.set(labelInst.labelName, labelInst);
+      return labelInst;
+    }
+    
+    if (trimmed.startsWith('cmp')) {
+      return new CmpInstruction(line, this.memory, this.flags);
+    } else if (trimmed.startsWith('jmp')) {
+      return new JmpInstruction(line, this.memory, this.labelMap, this.flags);
+    } else if (trimmed.startsWith('jne')) {
+      return new JneInstruction(line, this.memory, this.labelMap, this.flags);
+    } else if (trimmed.startsWith('je')) {
+      return new JeInstruction(line, this.memory, this.labelMap, this.flags);
+    } else if (trimmed.startsWith('jl')) {
+      return new JlInstruction(line, this.memory, this.labelMap, this.flags);
+    } else if (trimmed.startsWith('jg')) {
+      return new JgInstruction(line, this.memory, this.labelMap, this.flags);
+    } else if (trimmed.startsWith('jle')) {
+      return new JleInstruction(line, this.memory, this.labelMap, this.flags);
+    } else if (trimmed.startsWith('jge')) {
+      return new JgeInstruction(line, this.memory, this.labelMap, this.flags);
+    } else if (trimmed.startsWith('mov')) {
       return new MovInstruction(line, this.memory);
     } else if (trimmed.startsWith('add')) {
       return new AddInstruction(line, this.memory);
