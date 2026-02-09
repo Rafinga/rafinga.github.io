@@ -37531,7 +37531,7 @@ var raf = (function() {
     }
   };
 })();
-var requestAnimationFrame$1 = function requestAnimationFrame2(fn3) {
+var requestAnimationFrame = function requestAnimationFrame2(fn3) {
   return raf(fn3);
 };
 var performanceNow = pnow;
@@ -49303,7 +49303,7 @@ var corefn$8 = {
       if (!cy._private.animationsRunning) {
         return;
       }
-      requestAnimationFrame$1(function animationStep(now) {
+      requestAnimationFrame(function animationStep(now) {
         stepAll(now, cy);
         headlessStep();
       });
@@ -54367,7 +54367,7 @@ CoseLayout.prototype.run = function() {
         if (now - startTime >= options2.animationThreshold) {
           refresh();
         }
-        requestAnimationFrame$1(_frame);
+        requestAnimationFrame(_frame);
       }
     };
     _frame();
@@ -60246,9 +60246,9 @@ BRp$1.startRenderLoop = function() {
       beforeRenderCallbacks(r2, false, requestTime);
     }
     r2.skipFrame = false;
-    requestAnimationFrame$1(_renderFn);
+    requestAnimationFrame(_renderFn);
   };
-  requestAnimationFrame$1(_renderFn);
+  requestAnimationFrame(_renderFn);
 };
 var BaseRenderer = function BaseRenderer2(options2) {
   this.init(options2);
@@ -75918,13 +75918,16 @@ const useVolumeProgress = ({ enabled, decayRate, autoPlay, onVolumeChange }) => 
   const audioStartedRef = reactExports.useRef(false);
   const lastDecayTimeRef = reactExports.useRef(Date.now());
   reactExports.useEffect(() => {
-    audioRef.current = new Audio("/in-the-sea.mp3");
-    audioRef.current.loop = true;
-    audioRef.current.preload = "auto";
-    audioRef.current.volume = 0;
+    if (!audioRef.current) {
+      audioRef.current = new Audio("/in-the-sea.mp3");
+      audioRef.current.loop = true;
+      audioRef.current.preload = "auto";
+      audioRef.current.volume = 0;
+    }
+    const audio = audioRef.current;
     const startAudio = () => {
-      if (!audioStartedRef.current && audioRef.current && enabled) {
-        audioRef.current.play().catch(() => {
+      if (!audioStartedRef.current && audio && enabled) {
+        audio.play().catch(() => {
         });
         audioStartedRef.current = true;
       }
@@ -75932,8 +75935,8 @@ const useVolumeProgress = ({ enabled, decayRate, autoPlay, onVolumeChange }) => 
     const increaseVolume = () => {
       startAudio();
       volumeRef.current = Math.min(1, volumeRef.current + decayRate);
-      if (audioRef.current) {
-        audioRef.current.volume = volumeRef.current;
+      if (audio) {
+        audio.volume = volumeRef.current;
       }
       if (onVolumeChange) {
         onVolumeChange(volumeRef.current);
@@ -75962,20 +75965,19 @@ const useVolumeProgress = ({ enabled, decayRate, autoPlay, onVolumeChange }) => 
       }, 1e3);
     }
     if (enabled) {
-      const decayLoop = () => {
+      lastDecayTimeRef.current = Date.now();
+      decayIntervalRef.current = window.setInterval(() => {
         const now = Date.now();
         const deltaTime = (now - lastDecayTimeRef.current) / 1e3;
         lastDecayTimeRef.current = now;
         volumeRef.current = Math.max(0, volumeRef.current - decayRate * deltaTime);
-        if (audioRef.current) {
-          audioRef.current.volume = volumeRef.current;
+        if (audio) {
+          audio.volume = volumeRef.current;
         }
         if (onVolumeChange) {
           onVolumeChange(volumeRef.current);
         }
-        decayIntervalRef.current = requestAnimationFrame(decayLoop);
-      };
-      decayIntervalRef.current = requestAnimationFrame(decayLoop);
+      }, 50);
     }
     return () => {
       document.removeEventListener("click", handleInteraction);
@@ -75985,13 +75987,8 @@ const useVolumeProgress = ({ enabled, decayRate, autoPlay, onVolumeChange }) => 
         clearInterval(autoPlayIntervalRef.current);
       }
       if (decayIntervalRef.current) {
-        cancelAnimationFrame(decayIntervalRef.current);
+        clearInterval(decayIntervalRef.current);
       }
-      if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current = null;
-      }
-      audioStartedRef.current = false;
     };
   }, [enabled, decayRate, autoPlay, onVolumeChange]);
 };
