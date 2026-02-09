@@ -12,6 +12,7 @@ export const useVolumeProgress = ({ enabled, decayRate, autoPlay, onVolumeChange
   const volumeRef = useRef<number>(0)
   const decayIntervalRef = useRef<number | null>(null)
   const autoPlayIntervalRef = useRef<number | null>(null)
+  const audioStartedRef = useRef<boolean>(false)
 
   useEffect(() => {
     audioRef.current = new Audio('/in-the-sea.mp3')
@@ -19,11 +20,15 @@ export const useVolumeProgress = ({ enabled, decayRate, autoPlay, onVolumeChange
     audioRef.current.preload = 'auto'
     audioRef.current.volume = 0
     
-    if (enabled) {
-      audioRef.current.play().catch(() => {})
+    const startAudio = (): void => {
+      if (!audioStartedRef.current && audioRef.current && enabled) {
+        audioRef.current.play().catch(() => {})
+        audioStartedRef.current = true
+      }
     }
     
     const increaseVolume = (): void => {
+      startAudio()
       volumeRef.current = Math.min(1, volumeRef.current + decayRate)
       if (audioRef.current) {
         audioRef.current.volume = volumeRef.current
@@ -39,14 +44,25 @@ export const useVolumeProgress = ({ enabled, decayRate, autoPlay, onVolumeChange
       }
     }
     
-    // Add global listeners for manual mode
+    // Add global listeners for manual mode (including touch events)
     if (!autoPlay) {
       document.addEventListener('click', handleInteraction)
+      document.addEventListener('touchstart', handleInteraction)
       document.addEventListener('keydown', handleInteraction)
     }
     
     // Auto play mode - increase volume continuously
     if (autoPlay && enabled) {
+      // Start audio on first user interaction in autoplay mode
+      const startAutoPlay = (): void => {
+        startAudio()
+        document.removeEventListener('click', startAutoPlay)
+        document.removeEventListener('touchstart', startAutoPlay)
+      }
+      
+      document.addEventListener('click', startAutoPlay)
+      document.addEventListener('touchstart', startAutoPlay)
+      
       autoPlayIntervalRef.current = window.setInterval(() => {
         increaseVolume()
       }, 1000)
@@ -68,6 +84,7 @@ export const useVolumeProgress = ({ enabled, decayRate, autoPlay, onVolumeChange
     
     return () => {
       document.removeEventListener('click', handleInteraction)
+      document.removeEventListener('touchstart', handleInteraction)
       document.removeEventListener('keydown', handleInteraction)
       if (autoPlayIntervalRef.current) {
         clearInterval(autoPlayIntervalRef.current)
@@ -79,6 +96,7 @@ export const useVolumeProgress = ({ enabled, decayRate, autoPlay, onVolumeChange
         audioRef.current.pause()
         audioRef.current = null
       }
+      audioStartedRef.current = false
     }
   }, [enabled, decayRate, autoPlay, onVolumeChange])
 }
