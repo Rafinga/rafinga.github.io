@@ -14635,7 +14635,59 @@ function useViewTransitionState(to, { relative } = {}) {
   let nextPath = stripBasename(vtContext.nextLocation.pathname, basename) || vtContext.nextLocation.pathname;
   return matchPath(path.pathname, nextPath) != null || matchPath(path.pathname, currentPath) != null;
 }
-const Layout = ({ children, darkMode, setDarkMode }) => {
+const AudioControls = ({ enabled, setEnabled, chunkDuration, setChunkDuration, autoPlay, setAutoPlay }) => {
+  const [isOpen, setIsOpen] = reactExports.useState(false);
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "audio-controls", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx(
+      "button",
+      {
+        className: "audio-toggle",
+        onClick: () => setIsOpen(!isOpen),
+        children: "🎵"
+      }
+    ),
+    isOpen && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "audio-menu", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "audio-option", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "input",
+          {
+            type: "checkbox",
+            checked: enabled,
+            onChange: (e2) => setEnabled(e2.target.checked)
+          }
+        ),
+        "Enable"
+      ] }) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "audio-option", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "input",
+          {
+            type: "checkbox",
+            checked: autoPlay,
+            onChange: (e2) => setAutoPlay(e2.target.checked)
+          }
+        ),
+        "Auto"
+      ] }) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "audio-option", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { children: [
+        "Decay Rate: ",
+        chunkDuration.toFixed(2),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "input",
+          {
+            type: "range",
+            min: "0.01",
+            max: "0.5",
+            step: "0.01",
+            value: chunkDuration,
+            onChange: (e2) => setChunkDuration(parseFloat(e2.target.value))
+          }
+        )
+      ] }) })
+    ] })
+  ] });
+};
+const Layout = ({ children, darkMode, setDarkMode, audioEnabled, setAudioEnabled, chunkDuration, setChunkDuration, autoPlay, setAutoPlay }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = reactExports.useState(false);
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: `app ${darkMode ? "dark" : "light"}`, children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx("header", { className: "header", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("nav", { className: "nav", children: [
@@ -14652,9 +14704,7 @@ const Layout = ({ children, darkMode, setDarkMode }) => {
         /* @__PURE__ */ jsxRuntimeExports.jsx(Link, { to: "/", onClick: () => setMobileMenuOpen(false), children: "Home" }),
         /* @__PURE__ */ jsxRuntimeExports.jsx(Link, { to: "/experience", onClick: () => setMobileMenuOpen(false), children: "Experience" }),
         /* @__PURE__ */ jsxRuntimeExports.jsx(Link, { to: "/projects", onClick: () => setMobileMenuOpen(false), children: "Projects" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(Link, { to: "/skills", onClick: () => setMobileMenuOpen(false), children: "Skills" }),
         /* @__PURE__ */ jsxRuntimeExports.jsx(Link, { to: "/compiler", onClick: () => setMobileMenuOpen(false), children: "Compiler" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(Link, { to: "/experimental", onClick: () => setMobileMenuOpen(false), children: "Experimental" }),
         /* @__PURE__ */ jsxRuntimeExports.jsx(Link, { to: "/contact", onClick: () => setMobileMenuOpen(false), children: "Contact" })
       ] }),
       mobileMenuOpen && /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -14674,6 +14724,17 @@ const Layout = ({ children, darkMode, setDarkMode }) => {
           }
         ),
         /* @__PURE__ */ jsxRuntimeExports.jsx(
+          AudioControls,
+          {
+            enabled: audioEnabled,
+            setEnabled: setAudioEnabled,
+            chunkDuration,
+            setChunkDuration,
+            autoPlay,
+            setAutoPlay
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
           "button",
           {
             className: "theme-toggle",
@@ -14685,6 +14746,15 @@ const Layout = ({ children, darkMode, setDarkMode }) => {
     ] }) }),
     /* @__PURE__ */ jsxRuntimeExports.jsx("main", { className: "main", children })
   ] });
+};
+const VolumeBar = ({ volume }) => {
+  return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "volume-bar-container", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "volume-bar", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+    "div",
+    {
+      className: "volume-bar-fill",
+      style: { height: `${volume * 100}%` }
+    }
+  ) }) });
 };
 const Home = () => /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
   /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "hero", children: [
@@ -14702,20 +14772,26 @@ const Experience = () => {
     {
       title: "Software Engineer",
       company: "Amazon Web Services (AWS)",
+      team: "Tag Policies",
       duration: "September 2025 - Present",
-      description: "Building tools using widgets, automated deployments, and infrastructure as code for the AWS Tag Policies team. Developing scalable solutions for resource tagging and policy management across AWS services."
+      description: "Building tools using widgets, automated deployments, and infrastructure as code for the AWS Tag Policies team. Developing scalable solutions for resource tagging and policy management across AWS services.",
+      link: "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_tag-policies.html"
     },
     {
       title: "Amazon SDE Intern",
-      company: "Amazon",
+      company: "Amazon Web Services (AWS)",
+      team: "Tag Policies",
       duration: "Summer 2024",
-      description: "Used CDK to build an SNS notification consumer architecture that updates entries in a DynamoDB table, creating a self-updating L2 cache. Built a new API with throttling rates and authentication to update this cache."
+      description: "Used CDK to build an SNS notification consumer architecture that updates entries in a DynamoDB table, creating a self-updating L2 cache. Built a new API with throttling rates and authentication to update this cache.",
+      link: "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_tag-policies.html"
     },
     {
       title: "Amazon Propel Intern",
       company: "Amazon",
+      team: "Prime Video",
       duration: "Summer 2023",
-      description: "Created a new Java library for the Prime Video team that parsed different routing data files, validated them, and uploaded data to different DynamoDB tables. Automated the process using AWS Lambda and performed extensive testing with Mockito and JUnit libraries."
+      description: "Created a new Java library for the Prime Video team that parsed different routing data files, validated them, and uploaded data to different DynamoDB tables. Automated the process using AWS Lambda and performed extensive testing with Mockito and JUnit libraries.",
+      link: "https://www.amazon.com/gp/video/storefront"
     }
   ];
   const education = [
@@ -14741,9 +14817,14 @@ const Experience = () => {
     /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { children: "Experience" }),
     /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "experience-list", children: experiences.map((exp, index) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "experience-card", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: exp.title }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("h5", { children: exp.company }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("h5", { children: [
+        exp.company,
+        " - ",
+        exp.team
+      ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "duration", children: exp.duration }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "description", children: exp.description })
+      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "description", children: exp.description }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: exp.link, target: "_blank", rel: "noopener noreferrer", children: "Learn More" })
     ] }, index)) }),
     /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { children: "Education" }),
     /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "education-list", children: education.map((edu, index) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "experience-card", children: [
@@ -14763,21 +14844,28 @@ const Projects = () => {
       tech: "Java, Antlr, Compiler Design",
       description: "Led development of a 10,000+ line codebase implementing a complete compiler. Verified user input semantics and grammar via Antlr parse generator. Implemented dataflow algorithms to improve runtime performance.",
       duration: "Spring 2025",
-      link: "#"
+      link: "#/compiler"
     },
     {
-      name: "Single Model X-ray Classifier",
-      tech: "Python, Neural Networks, Computer Vision",
-      description: "Built and trained a multi-headed residual neural network classifier to identify issues in patient X-ray scans using advanced computer vision techniques.",
+      name: "FPGA Homomorphic Encryption System",
+      tech: "Verilog, SystemVerilog, FPGA, Cryptography",
+      description: "Designed Paillier cryptosystem on FPGA fabric using block stream approach for large number operations. Implemented parallel multiplication, exponentiation, and modulo modules for secure election vote encryption and decryption.",
       duration: "Spring 2024",
-      link: "#"
+      link: "https://github.com/LuisGuille1729/fpga_election"
     },
     {
       name: "Bouncy Animation System",
       tech: "C++, OpenGL, Physics Simulation",
       description: "Created a command-line real-time bouncy ball animation using C++ MIT OpenGL interface. Developed a general spring-gravity force system and integrator interfaces to model particle systems.",
       duration: "Fall 2023",
-      link: "#"
+      link: "https://github.com/Rafinga/Bouncy-Ball"
+    },
+    {
+      name: "ASCII Video Renderer",
+      tech: "Java, Computer Vision, Terminal Graphics",
+      description: "Real-time video to ASCII art converter that transforms webcam or video input into terminal-based ASCII characters, creating live animated text representations.",
+      duration: "Personal Project",
+      link: "https://github.com/Rafinga/ascii-training"
     }
   ];
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "projects", children: [
@@ -14789,39 +14877,6 @@ const Projects = () => {
       /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "project-description", children: project.description }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: project.link, children: "View Project" })
     ] }, index)) })
-  ] });
-};
-const Skills = () => {
-  const languages = [
-    "Java",
-    "C++",
-    "TypeScript",
-    "Python",
-    "HTML",
-    "CSS"
-  ];
-  const skills = [
-    "React",
-    "CDK",
-    "Agile",
-    "Git",
-    "Mockito",
-    "JUnit",
-    "AWS Lambda",
-    "DynamoDB",
-    "S3",
-    "MongoDB"
-  ];
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "skills", children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { children: "Technical Skills" }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "skills-section", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: "Programming Languages" }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "skills-grid", children: languages.map((lang, index) => /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "skill-item", children: lang }, index)) })
-    ] }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "skills-section", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: "Technologies & Tools" }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "skills-grid", children: skills.map((skill, index) => /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "skill-item", children: skill }, index)) })
-    ] })
   ] });
 };
 const KEYWORDS = /* @__PURE__ */ new Set([
@@ -75833,51 +75888,6 @@ void main() {
     ] })
   ] });
 };
-const Experimental = () => {
-  const [code, setCode] = reactExports.useState("");
-  const [output2, setOutput] = reactExports.useState("");
-  const handleCompile = () => {
-    setOutput(`Compiled output:
-${code}`);
-  };
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "experimental", children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { children: "Experimental" }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "experimental-grid", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "experiment-card", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: "AI Integration" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { children: "Exploring machine learning APIs" })
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "experiment-card", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: "WebGL Graphics" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { children: "3D rendering experiments" })
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "experiment-card compiler-card", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: "TypeScript Compiler" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "textarea",
-          {
-            value: code,
-            onChange: (e2) => setCode(e2.target.value),
-            placeholder: "Enter TypeScript code here...",
-            rows: 8,
-            style: { width: "100%", marginBottom: "10px" }
-          }
-        ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: handleCompile, style: { marginBottom: "10px" }, children: "Compile" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "textarea",
-          {
-            value: output2,
-            readOnly: true,
-            placeholder: "Output will appear here...",
-            rows: 8,
-            style: { width: "100%", backgroundColor: "#f5f5f5" }
-          }
-        )
-      ] })
-    ] })
-  ] });
-};
 const Contact = () => /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "contact", children: [
   /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { children: "Contact" }),
   /* @__PURE__ */ jsxRuntimeExports.jsx("p", { children: "Let's connect! Feel free to reach out for collaboration opportunities, internships, or just to chat about technology and computer science." }),
@@ -75900,19 +75910,160 @@ const Contact = () => /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { classN
     /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: "https://www.linkedin.com/in/rafael-gomez-433a19256/", children: "LinkedIn" })
   ] })
 ] });
+const useVolumeProgress = ({ enabled, decayRate, autoPlay, onVolumeChange }) => {
+  const audioRef = reactExports.useRef(null);
+  const volumeRef = reactExports.useRef(0);
+  const decayIntervalRef = reactExports.useRef(null);
+  const autoPlayIntervalRef = reactExports.useRef(null);
+  reactExports.useEffect(() => {
+    audioRef.current = new Audio("/in-the-sea.mp3");
+    audioRef.current.loop = true;
+    audioRef.current.preload = "auto";
+    audioRef.current.volume = 0;
+    if (enabled) {
+      audioRef.current.play().catch(() => {
+      });
+    }
+    const increaseVolume = () => {
+      volumeRef.current = Math.min(1, volumeRef.current + decayRate);
+      if (audioRef.current) {
+        audioRef.current.volume = volumeRef.current;
+      }
+      if (onVolumeChange) {
+        onVolumeChange(volumeRef.current);
+      }
+    };
+    const handleInteraction = () => {
+      if (!autoPlay) {
+        increaseVolume();
+      }
+    };
+    if (!autoPlay) {
+      document.addEventListener("click", handleInteraction);
+      document.addEventListener("keydown", handleInteraction);
+    }
+    if (autoPlay && enabled) {
+      autoPlayIntervalRef.current = window.setInterval(() => {
+        increaseVolume();
+      }, 1e3);
+    }
+    if (enabled) {
+      const decayPerTick = decayRate / 100;
+      decayIntervalRef.current = window.setInterval(() => {
+        volumeRef.current = Math.max(0, volumeRef.current - decayPerTick);
+        if (audioRef.current) {
+          audioRef.current.volume = volumeRef.current;
+        }
+        if (onVolumeChange) {
+          onVolumeChange(volumeRef.current);
+        }
+      }, 10);
+    }
+    return () => {
+      document.removeEventListener("click", handleInteraction);
+      document.removeEventListener("keydown", handleInteraction);
+      if (autoPlayIntervalRef.current) {
+        clearInterval(autoPlayIntervalRef.current);
+      }
+      if (decayIntervalRef.current) {
+        clearInterval(decayIntervalRef.current);
+      }
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+    };
+  }, [enabled, decayRate, autoPlay, onVolumeChange]);
+};
 function App() {
   const [darkMode, setDarkMode] = reactExports.useState(
     () => window.matchMedia("(prefers-color-scheme: dark)").matches
   );
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(HashRouter, { children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Routes, { children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/", element: /* @__PURE__ */ jsxRuntimeExports.jsx(Layout, { darkMode, setDarkMode, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Home, {}) }) }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/experience", element: /* @__PURE__ */ jsxRuntimeExports.jsx(Layout, { darkMode, setDarkMode, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Experience, {}) }) }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/projects", element: /* @__PURE__ */ jsxRuntimeExports.jsx(Layout, { darkMode, setDarkMode, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Projects, {}) }) }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/skills", element: /* @__PURE__ */ jsxRuntimeExports.jsx(Layout, { darkMode, setDarkMode, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Skills, {}) }) }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/compiler", element: /* @__PURE__ */ jsxRuntimeExports.jsx(Layout, { darkMode, setDarkMode, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Compiler, {}) }) }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/experimental", element: /* @__PURE__ */ jsxRuntimeExports.jsx(Layout, { darkMode, setDarkMode, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Experimental, {}) }) }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/contact", element: /* @__PURE__ */ jsxRuntimeExports.jsx(Layout, { darkMode, setDarkMode, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Contact, {}) }) })
-  ] }) });
+  const [audioEnabled, setAudioEnabled] = reactExports.useState(true);
+  const [decayRate, setDecayRate] = reactExports.useState(0.1);
+  const [autoPlay, setAutoPlay] = reactExports.useState(false);
+  const [volume, setVolume] = reactExports.useState(0);
+  useVolumeProgress({
+    enabled: audioEnabled,
+    decayRate,
+    autoPlay,
+    onVolumeChange: setVolume
+  });
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs(HashRouter, { children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx(VolumeBar, { volume }),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs(Routes, { children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/", element: /* @__PURE__ */ jsxRuntimeExports.jsx(
+        Layout,
+        {
+          darkMode,
+          setDarkMode,
+          audioEnabled,
+          setAudioEnabled,
+          chunkDuration: decayRate,
+          setChunkDuration: setDecayRate,
+          autoPlay,
+          setAutoPlay,
+          children: /* @__PURE__ */ jsxRuntimeExports.jsx(Home, {})
+        }
+      ) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/experience", element: /* @__PURE__ */ jsxRuntimeExports.jsx(
+        Layout,
+        {
+          darkMode,
+          setDarkMode,
+          audioEnabled,
+          setAudioEnabled,
+          chunkDuration: decayRate,
+          setChunkDuration: setDecayRate,
+          autoPlay,
+          setAutoPlay,
+          children: /* @__PURE__ */ jsxRuntimeExports.jsx(Experience, {})
+        }
+      ) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/projects", element: /* @__PURE__ */ jsxRuntimeExports.jsx(
+        Layout,
+        {
+          darkMode,
+          setDarkMode,
+          audioEnabled,
+          setAudioEnabled,
+          chunkDuration: decayRate,
+          setChunkDuration: setDecayRate,
+          autoPlay,
+          setAutoPlay,
+          children: /* @__PURE__ */ jsxRuntimeExports.jsx(Projects, {})
+        }
+      ) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/compiler", element: /* @__PURE__ */ jsxRuntimeExports.jsx(
+        Layout,
+        {
+          darkMode,
+          setDarkMode,
+          audioEnabled,
+          setAudioEnabled,
+          chunkDuration: decayRate,
+          setChunkDuration: setDecayRate,
+          autoPlay,
+          setAutoPlay,
+          children: /* @__PURE__ */ jsxRuntimeExports.jsx(Compiler, {})
+        }
+      ) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/contact", element: /* @__PURE__ */ jsxRuntimeExports.jsx(
+        Layout,
+        {
+          darkMode,
+          setDarkMode,
+          audioEnabled,
+          setAudioEnabled,
+          chunkDuration: decayRate,
+          setChunkDuration: setDecayRate,
+          autoPlay,
+          setAutoPlay,
+          children: /* @__PURE__ */ jsxRuntimeExports.jsx(Contact, {})
+        }
+      ) })
+    ] })
+  ] });
 }
 clientExports.createRoot(document.getElementById("root")).render(
   /* @__PURE__ */ jsxRuntimeExports.jsx(reactExports.StrictMode, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(App, {}) })
