@@ -11,7 +11,9 @@ import Contact from './pages/Contact'
 import './App.css'
 
 function App() {
-  const [darkMode, setDarkMode] = useState(false)
+  const [darkMode, setDarkMode] = useState(() => 
+    window.matchMedia('(prefers-color-scheme: dark)').matches
+  )
 
   return (
     <Router>
