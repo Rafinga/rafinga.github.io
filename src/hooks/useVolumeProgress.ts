@@ -16,14 +16,18 @@ export const useVolumeProgress = ({ enabled, decayRate, autoPlay, onVolumeChange
   const lastDecayTimeRef = useRef<number>(Date.now())
 
   useEffect(() => {
-    audioRef.current = new Audio('/in-the-sea.mp3')
-    audioRef.current.loop = true
-    audioRef.current.preload = 'auto'
-    audioRef.current.volume = 0
+    if (!audioRef.current) {
+      audioRef.current = new Audio('/in-the-sea.mp3')
+      audioRef.current.loop = true
+      audioRef.current.preload = 'auto'
+      audioRef.current.volume = 0
+    }
+    
+    const audio = audioRef.current
     
     const startAudio = (): void => {
-      if (!audioStartedRef.current && audioRef.current && enabled) {
-        audioRef.current.play().catch(() => {})
+      if (!audioStartedRef.current && audio && enabled) {
+        audio.play().catch(() => {})
         audioStartedRef.current = true
       }
     }
@@ -31,8 +35,8 @@ export const useVolumeProgress = ({ enabled, decayRate, autoPlay, onVolumeChange
     const increaseVolume = (): void => {
       startAudio()
       volumeRef.current = Math.min(1, volumeRef.current + decayRate)
-      if (audioRef.current) {
-        audioRef.current.volume = volumeRef.current
+      if (audio) {
+        audio.volume = volumeRef.current
       }
       if (onVolumeChange) {
         onVolumeChange(volumeRef.current)
@@ -69,24 +73,22 @@ export const useVolumeProgress = ({ enabled, decayRate, autoPlay, onVolumeChange
       }, 1000)
     }
     
-    // Smooth volume decay using requestAnimationFrame
+    // Smooth volume decay using setInterval (works in background)
     if (enabled) {
-      const decayLoop = (): void => {
+      lastDecayTimeRef.current = Date.now()
+      decayIntervalRef.current = window.setInterval(() => {
         const now = Date.now()
-        const deltaTime = (now - lastDecayTimeRef.current) / 1000 // seconds
+        const deltaTime = (now - lastDecayTimeRef.current) / 1000
         lastDecayTimeRef.current = now
         
         volumeRef.current = Math.max(0, volumeRef.current - (decayRate * deltaTime))
-        if (audioRef.current) {
-          audioRef.current.volume = volumeRef.current
+        if (audio) {
+          audio.volume = volumeRef.current
         }
         if (onVolumeChange) {
           onVolumeChange(volumeRef.current)
         }
-        
-        decayIntervalRef.current = requestAnimationFrame(decayLoop)
-      }
-      decayIntervalRef.current = requestAnimationFrame(decayLoop)
+      }, 50)
     }
     
     return () => {
@@ -97,13 +99,8 @@ export const useVolumeProgress = ({ enabled, decayRate, autoPlay, onVolumeChange
         clearInterval(autoPlayIntervalRef.current)
       }
       if (decayIntervalRef.current) {
-        cancelAnimationFrame(decayIntervalRef.current)
+        clearInterval(decayIntervalRef.current)
       }
-      if (audioRef.current) {
-        audioRef.current.pause()
-        audioRef.current = null
-      }
-      audioStartedRef.current = false
     }
   }, [enabled, decayRate, autoPlay, onVolumeChange])
 }
