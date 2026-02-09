@@ -37531,7 +37531,7 @@ var raf = (function() {
     }
   };
 })();
-var requestAnimationFrame = function requestAnimationFrame2(fn3) {
+var requestAnimationFrame$1 = function requestAnimationFrame2(fn3) {
   return raf(fn3);
 };
 var performanceNow = pnow;
@@ -49303,7 +49303,7 @@ var corefn$8 = {
       if (!cy._private.animationsRunning) {
         return;
       }
-      requestAnimationFrame(function animationStep(now) {
+      requestAnimationFrame$1(function animationStep(now) {
         stepAll(now, cy);
         headlessStep();
       });
@@ -54367,7 +54367,7 @@ CoseLayout.prototype.run = function() {
         if (now - startTime >= options2.animationThreshold) {
           refresh();
         }
-        requestAnimationFrame(_frame);
+        requestAnimationFrame$1(_frame);
       }
     };
     _frame();
@@ -60246,9 +60246,9 @@ BRp$1.startRenderLoop = function() {
       beforeRenderCallbacks(r2, false, requestTime);
     }
     r2.skipFrame = false;
-    requestAnimationFrame(_renderFn);
+    requestAnimationFrame$1(_renderFn);
   };
-  requestAnimationFrame(_renderFn);
+  requestAnimationFrame$1(_renderFn);
 };
 var BaseRenderer = function BaseRenderer2(options2) {
   this.init(options2);
@@ -75916,6 +75916,7 @@ const useVolumeProgress = ({ enabled, decayRate, autoPlay, onVolumeChange }) => 
   const decayIntervalRef = reactExports.useRef(null);
   const autoPlayIntervalRef = reactExports.useRef(null);
   const audioStartedRef = reactExports.useRef(false);
+  const lastDecayTimeRef = reactExports.useRef(Date.now());
   reactExports.useEffect(() => {
     audioRef.current = new Audio("/in-the-sea.mp3");
     audioRef.current.loop = true;
@@ -75961,16 +75962,20 @@ const useVolumeProgress = ({ enabled, decayRate, autoPlay, onVolumeChange }) => 
       }, 1e3);
     }
     if (enabled) {
-      const decayPerTick = decayRate / 100;
-      decayIntervalRef.current = window.setInterval(() => {
-        volumeRef.current = Math.max(0, volumeRef.current - decayPerTick);
+      const decayLoop = () => {
+        const now = Date.now();
+        const deltaTime = (now - lastDecayTimeRef.current) / 1e3;
+        lastDecayTimeRef.current = now;
+        volumeRef.current = Math.max(0, volumeRef.current - decayRate * deltaTime);
         if (audioRef.current) {
           audioRef.current.volume = volumeRef.current;
         }
         if (onVolumeChange) {
           onVolumeChange(volumeRef.current);
         }
-      }, 10);
+        decayIntervalRef.current = requestAnimationFrame(decayLoop);
+      };
+      decayIntervalRef.current = requestAnimationFrame(decayLoop);
     }
     return () => {
       document.removeEventListener("click", handleInteraction);
@@ -75980,7 +75985,7 @@ const useVolumeProgress = ({ enabled, decayRate, autoPlay, onVolumeChange }) => 
         clearInterval(autoPlayIntervalRef.current);
       }
       if (decayIntervalRef.current) {
-        clearInterval(decayIntervalRef.current);
+        cancelAnimationFrame(decayIntervalRef.current);
       }
       if (audioRef.current) {
         audioRef.current.pause();
