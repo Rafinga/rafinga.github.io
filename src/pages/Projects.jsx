@@ -5,21 +5,28 @@ const Projects = () => {
       tech: 'Java, Antlr, Compiler Design', 
       description: 'Led development of a 10,000+ line codebase implementing a complete compiler. Verified user input semantics and grammar via Antlr parse generator. Implemented dataflow algorithms to improve runtime performance.',
       duration: 'Spring 2025',
-      link: '#' 
+      link: '#/compiler' 
     },
     { 
-      name: 'Single Model X-ray Classifier', 
-      tech: 'Python, Neural Networks, Computer Vision', 
-      description: 'Built and trained a multi-headed residual neural network classifier to identify issues in patient X-ray scans using advanced computer vision techniques.',
+      name: 'FPGA Homomorphic Encryption System', 
+      tech: 'Verilog, SystemVerilog, FPGA, Cryptography', 
+      description: 'Designed Paillier cryptosystem on FPGA fabric using block stream approach for large number operations. Implemented parallel multiplication, exponentiation, and modulo modules for secure election vote encryption and decryption.',
       duration: 'Spring 2024',
-      link: '#' 
+      link: 'https://github.com/LuisGuille1729/fpga_election' 
     },
     { 
       name: 'Bouncy Animation System', 
       tech: 'C++, OpenGL, Physics Simulation', 
       description: 'Created a command-line real-time bouncy ball animation using C++ MIT OpenGL interface. Developed a general spring-gravity force system and integrator interfaces to model particle systems.',
       duration: 'Fall 2023',
-      link: '#' 
+      link: 'https://github.com/Rafinga/Bouncy-Ball' 
+    },
+    { 
+      name: 'ASCII Video Renderer', 
+      tech: 'Java, Computer Vision, Terminal Graphics', 
+      description: 'Real-time video to ASCII art converter that transforms webcam or video input into terminal-based ASCII characters, creating live animated text representations.',
+      duration: 'Personal Project',
+      link: 'https://github.com/Rafinga/ascii-training' 
     }
   ]
   

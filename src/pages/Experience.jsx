@@ -3,20 +3,26 @@ const Experience = () => {
     {
       title: "Software Engineer",
       company: "Amazon Web Services (AWS)",
+      team: "Tag Policies",
       duration: "September 2025 - Present",
-      description: "Building tools using widgets, automated deployments, and infrastructure as code for the AWS Tag Policies team. Developing scalable solutions for resource tagging and policy management across AWS services."
+      description: "Building tools using widgets, automated deployments, and infrastructure as code for the AWS Tag Policies team. Developing scalable solutions for resource tagging and policy management across AWS services.",
+      link: "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_tag-policies.html"
     },
     {
       title: "Amazon SDE Intern",
-      company: "Amazon",
+      company: "Amazon Web Services (AWS)",
+      team: "Tag Policies",
       duration: "Summer 2024",
-      description: "Used CDK to build an SNS notification consumer architecture that updates entries in a DynamoDB table, creating a self-updating L2 cache. Built a new API with throttling rates and authentication to update this cache."
+      description: "Used CDK to build an SNS notification consumer architecture that updates entries in a DynamoDB table, creating a self-updating L2 cache. Built a new API with throttling rates and authentication to update this cache.",
+      link: "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_tag-policies.html"
     },
     {
       title: "Amazon Propel Intern", 
       company: "Amazon",
+      team: "Prime Video",
       duration: "Summer 2023",
-      description: "Created a new Java library for the Prime Video team that parsed different routing data files, validated them, and uploaded data to different DynamoDB tables. Automated the process using AWS Lambda and performed extensive testing with Mockito and JUnit libraries."
+      description: "Created a new Java library for the Prime Video team that parsed different routing data files, validated them, and uploaded data to different DynamoDB tables. Automated the process using AWS Lambda and performed extensive testing with Mockito and JUnit libraries.",
+      link: "https://www.amazon.com/gp/video/storefront"
     }
   ]
 
@@ -42,9 +48,10 @@ const Experience = () => {
         {experiences.map((exp, index) => (
           <div key={index} className="experience-card">
             <h4>{exp.title}</h4>
-            <h5>{exp.company}</h5>
+            <h5>{exp.company} - {exp.team}</h5>
             <p className="duration">{exp.duration}</p>
             <p className="description">{exp.description}</p>
+            <a href={exp.link} target="_blank" rel="noopener noreferrer">Learn More</a>
           </div>
         ))}
       </div>

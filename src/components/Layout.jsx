@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import AudioControls from './AudioControls'
 
-const Layout = ({ children, darkMode, setDarkMode }) => {
+const Layout = ({ children, darkMode, setDarkMode, audioEnabled, setAudioEnabled, chunkDuration, setChunkDuration, autoPlay, setAutoPlay }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   return (
@@ -19,9 +20,7 @@ const Layout = ({ children, darkMode, setDarkMode }) => {
             <Link to="/" onClick={() => setMobileMenuOpen(false)}>Home</Link>
             <Link to="/experience" onClick={() => setMobileMenuOpen(false)}>Experience</Link>
             <Link to="/projects" onClick={() => setMobileMenuOpen(false)}>Projects</Link>
-            <Link to="/skills" onClick={() => setMobileMenuOpen(false)}>Skills</Link>
             <Link to="/compiler" onClick={() => setMobileMenuOpen(false)}>Compiler</Link>
-            <Link to="/experimental" onClick={() => setMobileMenuOpen(false)}>Experimental</Link>
             <Link to="/contact" onClick={() => setMobileMenuOpen(false)}>Contact</Link>
           </div>
           {mobileMenuOpen && (
@@ -37,6 +36,14 @@ const Layout = ({ children, darkMode, setDarkMode }) => {
             >
               ☰
             </button>
+            <AudioControls 
+              enabled={audioEnabled}
+              setEnabled={setAudioEnabled}
+              chunkDuration={chunkDuration}
+              setChunkDuration={setChunkDuration}
+              autoPlay={autoPlay}
+              setAutoPlay={setAutoPlay}
+            />
             <button 
               className="theme-toggle"
               onClick={() => setDarkMode(!darkMode)}
