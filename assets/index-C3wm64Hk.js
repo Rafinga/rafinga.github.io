@@ -12483,9 +12483,16 @@ function requireClient() {
 }
 var clientExports = requireClient();
 var PopStateEventType = "popstate";
-function createBrowserHistory(options2 = {}) {
-  function createBrowserLocation(window22, globalHistory) {
-    let { pathname, search, hash } = window22.location;
+function createHashHistory(options2 = {}) {
+  function createHashLocation(window22, globalHistory) {
+    let {
+      pathname = "/",
+      search = "",
+      hash = ""
+    } = parsePath(window22.location.hash.substring(1));
+    if (!pathname.startsWith("/") && !pathname.startsWith(".")) {
+      pathname = "/" + pathname;
+    }
     return createLocation(
       "",
       { pathname, search, hash },
@@ -12494,13 +12501,28 @@ function createBrowserHistory(options2 = {}) {
       globalHistory.state && globalHistory.state.key || "default"
     );
   }
-  function createBrowserHref(window22, to) {
-    return typeof to === "string" ? to : createPath(to);
+  function createHashHref(window22, to) {
+    let base = window22.document.querySelector("base");
+    let href = "";
+    if (base && base.getAttribute("href")) {
+      let url = window22.location.href;
+      let hashIndex = url.indexOf("#");
+      href = hashIndex === -1 ? url : url.slice(0, hashIndex);
+    }
+    return href + "#" + (typeof to === "string" ? to : createPath(to));
+  }
+  function validateHashLocation(location, to) {
+    warning(
+      location.pathname.charAt(0) === "/",
+      `relative pathnames are not supported in hash history.push(${JSON.stringify(
+        to
+      )})`
+    );
   }
   return getUrlBasedHistory(
-    createBrowserLocation,
-    createBrowserHref,
-    null,
+    createHashLocation,
+    createHashHref,
+    validateHashLocation,
     options2
   );
 }
@@ -12599,6 +12621,7 @@ function getUrlBasedHistory(getLocation, createHref2, validateLocation, options2
   function push3(to, state) {
     action = "PUSH";
     let location = createLocation(history.location, to, state);
+    if (validateLocation) validateLocation(location, to);
     index = getIndex() + 1;
     let historyState = getHistoryState(location, index);
     let url = history.createHref(location);
@@ -12617,6 +12640,7 @@ function getUrlBasedHistory(getLocation, createHref2, validateLocation, options2
   function replace2(to, state) {
     action = "REPLACE";
     let location = createLocation(history.location, to, state);
+    if (validateLocation) validateLocation(location, to);
     index = getIndex();
     let historyState = getHistoryState(location, index);
     let url = history.createHref(location);
@@ -14226,7 +14250,7 @@ try {
   }
 } catch (e2) {
 }
-function BrowserRouter({
+function HashRouter({
   basename,
   children,
   unstable_useTransitions,
@@ -14234,7 +14258,7 @@ function BrowserRouter({
 }) {
   let historyRef = reactExports.useRef();
   if (historyRef.current == null) {
-    historyRef.current = createBrowserHistory({ window: window22, v5Compat: true });
+    historyRef.current = createHashHistory({ window: window22, v5Compat: true });
   }
   let history = historyRef.current;
   let [state, setStateImpl] = reactExports.useState({
@@ -75877,8 +75901,10 @@ const Contact = () => /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { classN
   ] })
 ] });
 function App() {
-  const [darkMode, setDarkMode] = reactExports.useState(false);
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(BrowserRouter, { children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Routes, { children: [
+  const [darkMode, setDarkMode] = reactExports.useState(
+    () => window.matchMedia("(prefers-color-scheme: dark)").matches
+  );
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(HashRouter, { children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Routes, { children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/", element: /* @__PURE__ */ jsxRuntimeExports.jsx(Layout, { darkMode, setDarkMode, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Home, {}) }) }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/experience", element: /* @__PURE__ */ jsxRuntimeExports.jsx(Layout, { darkMode, setDarkMode, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Experience, {}) }) }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/projects", element: /* @__PURE__ */ jsxRuntimeExports.jsx(Layout, { darkMode, setDarkMode, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Projects, {}) }) }),
